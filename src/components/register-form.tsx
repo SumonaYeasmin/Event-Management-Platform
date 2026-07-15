@@ -9,7 +9,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-[360px] flex flex-col justify-center">
+    <div className="w-full max-w-90 flex flex-col justify-center">
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-[#2e3bb1] tracking-tight mb-2">
           Create your account
