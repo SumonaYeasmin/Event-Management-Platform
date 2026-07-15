@@ -22,7 +22,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#090d16]/80 via-transparent to-transparent" />
 
         {/* Content Container */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 md:px-8 pt-16 md:pt-24 pb-8 flex flex-col items-start space-y-6 flex-1 justify-center">
+        <div className="relative z-10 w-full container mx-auto px-4 md:px-8 pt-16 md:pt-24 pb-8 flex flex-col items-start space-y-6 flex-1 justify-center">
           
           {/* Tagline Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] md:text-xs font-semibold text-slate-200 tracking-wide">
