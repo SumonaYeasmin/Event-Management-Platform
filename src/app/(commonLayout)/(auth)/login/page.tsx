@@ -6,21 +6,14 @@ export default function LoginPage() {
       {/* Centered Main Card Container */}
       <div className="w-full max-w-5xl bg-white rounded-2xl md:rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[550px] md:min-h-[650px] border border-slate-100">
         
-        {/* Left side: Rendered Form Component */}
-        <div className="flex flex-col justify-center items-center px-6 py-10 md:px-10 lg:px-14 bg-[#fcfdfe]">
-          <LoginForm />
-        </div>
-
-        {/* Right side: Visual overlay */}
+        {/* Left side: Visual overlay */}
         <div className="relative hidden md:flex flex-col justify-between p-10 lg:p-12 text-white overflow-hidden">
-     
           <div 
             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
             style={{
               backgroundImage: `url('https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80')`,
             }}
           />
-    
           <div className="absolute inset-0 bg-gradient-to-br from-[#1e1b4b]/90 via-[#0f172a]/85 to-[#020617]/95 mix-blend-multiply" />
 
           {/* Top Branding Section */}
@@ -57,6 +50,11 @@ export default function LoginPage() {
               Discover and register for events, host your own, and manage everything with role-based dashboards.
             </p>
           </div>
+        </div>
+
+        {/* Right side: Rendered Form Component */}
+        <div className="flex flex-col justify-center items-center px-6 py-10 md:px-10 lg:px-14 bg-[#fcfdfe]">
+          <LoginForm />
         </div>
 
       </div>
