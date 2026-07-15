@@ -1,11 +1,8 @@
 import Link from "next/link";
-import Navbar from "../shared/Navbar";
 
 export default function Hero() {
   return (
     <div className="w-full flex flex-col">
-      {/* 1. Header Navigation Bar */}
-      <Navbar />
 
       {/* 2. Hero Body Section */}
       <div className="relative bg-[#090d16] text-white overflow-hidden min-h-[580px] md:min-h-[640px] flex flex-col justify-between">
