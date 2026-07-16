@@ -50,7 +50,7 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
   const adminItems = [
     { title: "Platform Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { title: "Users", href: "/admin/dashboard/users", icon: Users },
-    { title: "Organizers", href: "/admin/dashboard/organizers", icon: ShieldAlert },
+    { title: "Organizers", href: "/admin/dashboard/organizars", icon: ShieldAlert },
     { title: "All Events", href: "/admin/dashboard/all-events", icon: CalendarCheck },
     { title: "Pending Approvals", href: "/admin/dashboard/pending-approvals", icon: ClockAlert },
     { title: "Categories", href: "/admin/dashboard/categories", icon: List },
