@@ -42,7 +42,7 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
   const organizerItems = [
     { title: "Overview", href: "/organizer/dashboard", icon: LayoutDashboard },
     { title: "My Events", href: "/organizer/dashboard/my-events", icon: CalendarCheck },
-    { title: "Create Event", href: "/organizer/dashboard/creat-event", icon: CalendarPlus },
+    { title: "Create Event", href: "/organizer/dashboard/create-event", icon: CalendarPlus },
     { title: "Profile Settings", href: "/organizer/dashboard/profile-settings", icon: UserCog },
   ];
 
