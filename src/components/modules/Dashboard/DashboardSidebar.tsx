@@ -40,21 +40,21 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
 
   // ২. অর্গানাইজার মেনু আইটেম 
   const organizerItems = [
-    { title: "Overview", href: "/dashboard/organizer", icon: LayoutDashboard },
-    { title: "My Events", href: "/dashboard/organizer/my-events", icon: CalendarCheck },
-    { title: "Create Event", href: "/dashboard/organizer/create-event", icon: CalendarPlus },
-    { title: "Profile Settings", href: "/dashboard/organizer/profile-settings", icon: UserCog },
+    { title: "Overview", href: "/organizer/dashboard", icon: LayoutDashboard },
+    { title: "My Events", href: "/organizer/dashboard/my-events", icon: CalendarCheck },
+    { title: "Create Event", href: "/organizer/dashboard/creat-event", icon: CalendarPlus },
+    { title: "Profile Settings", href: "/organizer/dashboard/profile-settings", icon: UserCog },
   ];
 
   // ৩. এডমিন মেনু আইটেম
   const adminItems = [
-    { title: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
-    { title: "Users", href: "/dashboard/admin/users", icon: Users },
-    { title: "Organizers", href: "/dashboard/admin/organizers", icon: ShieldAlert },
-    { title: "All Events", href: "/dashboard/admin/all-events", icon: CalendarCheck },
-    { title: "Pending Approvals", href: "/dashboard/admin/pending-approvals", icon: ClockAlert },
-    { title: "Categories", href: "/dashboard/admin/categories", icon: List },
-    { title: "Profile Settings", href: "/dashboard/admin/profile-settings", icon: UserCog },
+    { title: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
+    { title: "Users", href: "/admin/dashboard/users", icon: Users },
+    { title: "Organizers", href: "/admin/dashboard/organizers", icon: ShieldAlert },
+    { title: "All Events", href: "/admin/dashboard/all-events", icon: CalendarCheck },
+    { title: "Pending Approvals", href: "/admin/dashboard/pending-approvals", icon: ClockAlert },
+    { title: "Categories", href: "/admin/dashboard/categories", icon: List },
+    { title: "Profile Settings", href: "/admin/dashboard/profile-settings", icon: UserCog },
   ];
 
   // currentRole অনুযায়ী কোন মেনুটা স্ক্রিনে দেখাবে তা সিলেক্ট করা হচ্ছে

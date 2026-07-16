@@ -13,7 +13,7 @@ export default function DashboardLayout({
 
     // 💡 ম্যাজিক ভ্যারিয়েবল: ফ্রন্টএন্ড ডিজাইন করার সময় এটা ম্যানুয়ালি চেঞ্জ করবে।
     // অপশনগুলো হলো: "USER" | "ORGANIZER" | "ADMIN"
-    const currentRole = "USER";
+    const currentRole = "ORGANIZER";
 
     return (
         <SidebarProvider>
