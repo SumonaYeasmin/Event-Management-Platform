@@ -48,7 +48,7 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
 
   // ৩. এডমিন মেনু আইটেম
   const adminItems = [
-    { title: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
+    { title: "Platform Overview", href: "/admin/dashboard", icon: LayoutDashboard },
     { title: "Users", href: "/admin/dashboard/users", icon: Users },
     { title: "Organizers", href: "/admin/dashboard/organizers", icon: ShieldAlert },
     { title: "All Events", href: "/admin/dashboard/all-events", icon: CalendarCheck },
