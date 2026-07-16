@@ -158,7 +158,7 @@ export default function UpcomingEvents() {
                 />
                 
                 {/* Date Badge */}
-                <div className="absolute top-4 left-4 bg-white px-3 py-2 rounded-2xl flex flex-col items-center justify-center shadow-md border border-slate-100/50 min-w-[54px]">
+                <div className="absolute top-4 left-4 bg-white px-3 py-2 rounded-2xl flex flex-col items-center justify-center shadow-md border border-slate-100/50 min-w-13.5">
                   <span className="text-[10px] font-bold tracking-wider text-[#4f46e5]">
                     {event.date.month}
                   </span>

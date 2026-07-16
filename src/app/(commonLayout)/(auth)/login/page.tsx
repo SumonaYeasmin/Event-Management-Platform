@@ -4,7 +4,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#f1f5f9] p-4 md:p-8">
       {/* Centered Main Card Container */}
-      <div className="w-full max-w-5xl bg-white rounded-2xl md:rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[550px] md:min-h-[650px] border border-slate-100">
+      <div className="w-full max-w-5xl bg-white rounded-2xl md:rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-135.5 md:min-h-162.5 border border-slate-100">
         
         {/* Left side: Visual overlay */}
         <div className="relative hidden md:flex flex-col justify-between p-10 lg:p-12 text-white overflow-hidden">
@@ -14,7 +14,7 @@ export default function LoginPage() {
               backgroundImage: `url('https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80')`,
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1e1b4b]/90 via-[#0f172a]/85 to-[#020617]/95 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-linear-to-r from-[#1e1b4b]/90 via-[#0f172a]/85 to-[#020617]/95 mix-blend-multiply" />
 
           {/* Top Branding Section */}
           <div className="relative z-10 flex items-center gap-3">

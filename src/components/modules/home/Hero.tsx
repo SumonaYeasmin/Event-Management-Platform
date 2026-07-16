@@ -5,7 +5,7 @@ export default function Hero() {
     <div className="w-full flex flex-col">
 
       {/* 2. Hero Body Section */}
-      <div className="relative bg-[#090d16] text-white overflow-hidden min-h-[580px] md:min-h-[640px] flex flex-col justify-between">
+      <div className="relative bg-[#090d16] text-white overflow-hidden min-h-135.5 md:min-h-162.5 flex flex-col justify-between">
         
         {/* Background Image of Conference Room */}
         <div 
@@ -15,8 +15,8 @@ export default function Hero() {
           }}
         />
         {/* Deep Navy/Black Gradient Overlay (Made lighter for better image visibility) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#090d16]/80 via-[#090d16]/45 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090d16]/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#090d16]/80 via-[#090d16]/45 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#090d16]/80 via-transparent to-transparent" />
 
         {/* Content Container */}
         <div className="relative z-10 w-full container mx-auto px-4 md:px-8 pt-16 md:pt-24 pb-8 flex flex-col items-start space-y-6 flex-1 justify-center">
@@ -44,7 +44,7 @@ export default function Hero() {
           {/* Main Headline */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] max-w-2xl text-white">
             Find, register, and host <br />
-            <span className="text-[#7c3aed] bg-gradient-to-r from-indigo-400 via-indigo-300 to-blue-400 bg-clip-text text-transparent">
+            <span className=" bg-linear-to-r from-indigo-400 via-indigo-300 to-blue-400 bg-clip-text text-transparent">
               unforgettable events.
             </span>
           </h1>
