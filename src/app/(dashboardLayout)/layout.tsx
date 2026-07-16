@@ -1,8 +1,9 @@
-// app/dashboard/layout.tsx
+"use client";
 
 import { DashboardSidebar } from "@/src/components/modules/Dashboard/DashboardSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/src/components/ui/sidebar";
 import { User, CalendarCheck, ShieldCheck } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 
 export default function DashboardLayout({
@@ -10,10 +11,33 @@ export default function DashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const pathname = usePathname();
 
     // 💡 ম্যাজিক ভ্যারিয়েবল: ফ্রন্টএন্ড ডিজাইন করার সময় এটা ম্যানুয়ালি চেঞ্জ করবে।
     // অপশনগুলো হলো: "USER" | "ORGANIZER" | "ADMIN"
     const currentRole = "ADMIN";
+
+    const getHeaderTitle = (path: string) => {
+        if (path.endsWith("/dashboard/overview")) return "Overview";
+        if (path.endsWith("/dashboard/register-events") || path.endsWith("/dashboard/my-register-events")) return "My Registered Events";
+        if (path.endsWith("/dashboard/save-events")) return "Saved Events";
+        if (path.endsWith("/dashboard/profile-settings")) return "Profile Settings";
+
+        if (path.endsWith("/organizer/dashboard")) return "Overview";
+        if (path.endsWith("/organizer/dashboard/my-events")) return "My Events";
+        if (path.endsWith("/organizer/dashboard/create-event")) return "Create Event";
+
+        if (path.endsWith("/admin/dashboard")) return "Platform Overview";
+        if (path.endsWith("/admin/dashboard/users")) return "User Management";
+        if (path.endsWith("/admin/dashboard/organizars")) return "Organizer Management";
+        if (path.endsWith("/admin/dashboard/all-events")) return "All Events";
+        if (path.endsWith("/admin/dashboard/pending-approvals")) return "Pending Approvals";
+        if (path.endsWith("/admin/dashboard/categories")) return "Category Management";
+
+        return "Overview";
+    };
+
+    const headerTitle = getHeaderTitle(pathname || "");
 
     return (
         <SidebarProvider>
@@ -24,11 +48,9 @@ export default function DashboardLayout({
 
                 <div className="flex flex-1 flex-col">
                     <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white px-6">
-                        <div className="flex items-center gap-3">
-                            <SidebarTrigger className="text-slate-500 hover:bg-slate-100 cursor-pointer" />
-                            <span className="h-4 w-px bg-slate-200" />
+                        <div className="flex items-center">
                             <h1 className="text-base font-semibold text-slate-800">
-                                Overview
+                                {headerTitle}
                             </h1>
                         </div>
                         <div className="flex items-center gap-4">

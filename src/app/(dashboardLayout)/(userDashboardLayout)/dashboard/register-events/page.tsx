@@ -54,11 +54,8 @@ const registeredEvents: RegisteredEvent[] = [
 
 export default function MyRegisterEventsPage() {
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">My Registered Events</h1>
-      </div>
+    <div className="space-y-6 w-full">
+
 
       {/* Events List */}
       <div className="space-y-4">

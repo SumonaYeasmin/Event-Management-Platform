@@ -70,12 +70,11 @@ const categoriesList: CategoryItem[] = [
 
 export default function CategoriesPage() {
   return (
-    <div className="space-y-6 max-w-6xl mx-auto ">
+    <div className="space-y-6 w-full">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Category Management</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500">
             8 categories · organizers choose from these
           </p>
         </div>

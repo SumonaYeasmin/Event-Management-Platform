@@ -68,11 +68,8 @@ const organizerEvents: OrganizerEvent[] = [
 
 export default function MyEventsPage() {
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">My Events</h1>
-      </div>
+    <div className="space-y-6 w-full">
+
 
       {/* Filter Badges and Create Event Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

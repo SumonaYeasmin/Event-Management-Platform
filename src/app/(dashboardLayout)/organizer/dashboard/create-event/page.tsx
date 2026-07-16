@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function CreateEventPage() {
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 w-full">
       {/* Back to my events Link */}
       <div>
         <Link 
@@ -16,10 +16,7 @@ export default function CreateEventPage() {
         </Link>
       </div>
 
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Create Event</h1>
-      </div>
+
 
       {/* Two Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

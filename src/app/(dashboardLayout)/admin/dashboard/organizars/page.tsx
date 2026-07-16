@@ -43,11 +43,8 @@ const organizersList: OrganizerItem[] = [
 
 export default function OrganizerManagementPage() {
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Organizer Management</h1>
-      </div>
+    <div className="space-y-6 w-full">
+
 
       {/* Stats and Search Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

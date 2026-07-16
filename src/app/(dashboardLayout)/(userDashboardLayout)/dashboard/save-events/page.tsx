@@ -80,11 +80,8 @@ const savedEvents: SavedEvent[] = [
 
 export default function SaveEventsPage() {
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Saved Events</h1>
-      </div>
+    <div className="space-y-6 w-full">
+
 
       {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
