@@ -32,10 +32,10 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
 
   // ১. ইউজার মেনু আইটেম
   const userItems = [
-    { title: "Overview", href: "/dashboard/user", icon: LayoutDashboard },
-    { title: "Save Events", href: "/dashboard/user/saved-events", icon: CalendarHeart },
-    { title: "My Register Events", href: "/dashboard/user/registered-events", icon: CalendarCheck },
-    { title: "Profile Settings", href: "/dashboard/user/profile-settings", icon: UserCog },
+    { title: "Overview", href: "/dashboard/overview", icon: LayoutDashboard },
+    { title: "Save Events", href: "/dashboard/save-events", icon: CalendarHeart },
+    { title: "My Register Events", href: "/dashboard/register-events", icon: CalendarCheck },
+    { title: "Profile Settings", href: "/dashboard/profile-settings", icon: UserCog },
   ];
 
   // ২. অর্গানাইজার মেনু আইটেম 
@@ -77,7 +77,11 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
     <Sidebar 
       variant="sidebar" 
       collapsible="icon" 
-      className="bg-[#0B0F19] text-slate-300 border-r border-slate-800/60 [&>[data-slot=sidebar-inner]]:bg-[#0B0F19] [&>[data-slot=sidebar-inner]]:border-r [&>[data-slot=sidebar-inner]]:border-slate-800/60"
+      style={{
+        "--sidebar": "#131b2e",
+        "--sidebar-border": "rgba(30, 41, 59, 0.6)"
+      } as React.CSSProperties}
+      className="text-slate-300 border-r border-slate-800/60"
     >
       {/* Header */}
       <SidebarHeader className="px-5 py-5 flex flex-row items-center gap-3 border-b border-slate-800/40">
@@ -120,7 +124,7 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
                         "flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-200 w-full",
                         isActive 
                           ? "bg-indigo-600 text-white font-medium shadow-sm shadow-indigo-600/10" 
-                          : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/40"
+                          : "text-slate-300 hover:text-slate-100 hover:bg-slate-800/40"
                       )}
                     >
                       <item.icon className={cn("h-4 w-4 shrink-0", isActive ? "text-white" : "text-slate-400")} />
@@ -136,7 +140,7 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
         {/* Account Section */}
         {accountItems.length > 0 && (
           <SidebarGroup className="p-0">
-            <SidebarGroupLabel className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2 group-data-[collapsible=icon]:hidden">
+            <SidebarGroupLabel className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2 group-data-[collapsible=icon]:hidden">
               Account
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -152,7 +156,7 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
                           "flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-200 w-full",
                           isActive 
                             ? "bg-indigo-600 text-white font-medium shadow-sm shadow-indigo-600/10" 
-                            : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/40"
+                            : "text-slate-300 hover:text-slate-100 hover:bg-slate-800/40"
                         )}
                       >
                         <item.icon className={cn("h-4 w-4 shrink-0", isActive ? "text-white" : "text-slate-400")} />
@@ -172,8 +176,8 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
         {/* View Public Site Link */}
         <div className="px-3 py-2 border-t border-slate-800/40">
           <Link href="/" className="flex items-center gap-3 px-3 py-2 text-sm text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-slate-800/30">
-            <ExternalLink className="h-4 w-4 text-slate-400 shrink-0" />
-            <span className="font-medium text-sm group-data-[collapsible=icon]:hidden">View public site</span>
+            <ExternalLink className="h-4 w-4 text-slate-300 shrink-0" />
+            <span className="font-medium text-sm group-data-[collapsible=icon]:hidden text-slate-300">View public site</span>
           </Link>
         </div>
 
