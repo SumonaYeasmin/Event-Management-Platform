@@ -64,18 +64,17 @@ const recentEvents: RecentEvent[] = [
 
 export default function OrganizerOverviewPage() {
   return (
-    <div className="space-y-8 max-w-6xl mx-auto">
+    <div className="space-y-8 w-full">
       {/* 1. Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Organizer overview</h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Track your your events and registrations at a glance.
+          <p className="text-sm text-slate-500">
+            Track your events and registrations at a glance.
           </p>
         </div>
         <Link 
-          href="/organizer/dashboard/creat-event" 
-          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-indigo-600/10 cursor-pointer self-start md:self-auto"
+          href="/organizer/dashboard/create-event" 
+          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-indigo-600/10 cursor-pointer self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           Create event
@@ -144,7 +143,7 @@ export default function OrganizerOverviewPage() {
             const isCompleted = event.status === 'Completed';
             const isPending = event.status === 'Pending';
             return (
-              <div key={event.id} className="py-4 flex items-center justify-between gap-4 first:pt-0 last:pb-0">
+              <div key={event.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 first:pt-0 last:pb-0">
                 <div className="flex items-center gap-4">
                   <img
                     src={event.image}
@@ -155,7 +154,7 @@ export default function OrganizerOverviewPage() {
                     <h4 className="text-sm font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors leading-tight">
                       {event.title}
                     </h4>
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
                       <Clock className="h-3.5 w-3.5 shrink-0" />
                       <span>{event.date}</span>
                       <span>•</span>
@@ -164,8 +163,8 @@ export default function OrganizerOverviewPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6 shrink-0">
-                  <span className="text-xs font-medium text-slate-500 hidden sm:inline">
+                <div className="flex items-center justify-between sm:justify-end gap-6 shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-2.5 sm:pt-0 border-slate-50">
+                  <span className="text-xs font-semibold text-slate-500">
                     {event.seats}
                   </span>
                   

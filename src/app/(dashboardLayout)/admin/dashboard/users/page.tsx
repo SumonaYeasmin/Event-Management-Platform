@@ -59,8 +59,71 @@ export default function UserManagementPage() {
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
+      {/* Mobile Card List (Visible only on mobile/tablet) */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {usersList.map((user) => {
+          const isActive = user.status === 'Active';
+          return (
+            <div key={user.id} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-4">
+              {/* Header: Avatar & Info */}
+              <div className="flex items-center gap-3">
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  className="h-10 w-10 rounded-full bg-slate-100 object-cover border border-slate-200/50"
+                />
+                <div className="space-y-0.5">
+                  <h4 className="text-sm font-bold text-slate-900 leading-none">{user.name}</h4>
+                  <p className="text-xs text-slate-400 mt-1">{user.email}</p>
+                </div>
+              </div>
+
+              {/* Details Grid */}
+              <div className="grid grid-cols-2 gap-4 py-3 border-y border-slate-100 text-xs font-semibold">
+                <div>
+                  <span className="text-slate-400 block font-normal text-[10px] uppercase mb-0.5">Joined</span>
+                  <span className="text-slate-700">{user.joined}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block font-normal text-[10px] uppercase mb-0.5">Registrations</span>
+                  <span className="text-slate-850">{user.registrations}</span>
+                </div>
+              </div>
+
+              {/* Footer: Status and Action Button */}
+              <div className="flex items-center justify-between pt-1">
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 w-fit ${
+                  isActive 
+                    ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                    : 'bg-rose-50 text-rose-600 border-rose-100'
+                }`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${
+                    isActive ? 'bg-emerald-500' : 'bg-rose-500'
+                  }`} />
+                  {user.status}
+                </span>
+
+                <div>
+                  {isActive ? (
+                    <button className="border border-slate-200 hover:bg-rose-50 hover:border-rose-100 hover:text-rose-600 transition-colors text-xs font-semibold py-1.5 px-3 rounded-lg flex items-center gap-1 cursor-pointer">
+                      <Ban className="h-3.5 w-3.5 text-rose-400" />
+                      Suspend
+                    </button>
+                  ) : (
+                    <button className="border border-slate-200 hover:bg-emerald-50 hover:border-emerald-100 hover:text-emerald-600 transition-colors text-xs font-semibold py-1.5 px-3 rounded-lg flex items-center gap-1 cursor-pointer">
+                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      Activate
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Table Container (Visible only on desktop) */}
+      <div className="hidden md:block bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

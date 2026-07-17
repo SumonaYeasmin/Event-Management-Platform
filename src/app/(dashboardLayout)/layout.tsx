@@ -3,6 +3,7 @@
 import { DashboardSidebar } from "@/src/components/modules/Dashboard/DashboardSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/src/components/ui/sidebar";
 import { User, CalendarCheck, ShieldCheck } from "lucide-react";
+import DashboardMobileSidebar from "@/src/components/modules/Dashboard/DashboardMobileSidebar";
 import { usePathname } from "next/navigation";
 
 
@@ -46,9 +47,10 @@ export default function DashboardLayout({
                 {/* সাইডবারে আমরা কারেন্ট রোলটা পাঠিয়ে দিচ্ছি */}
                 <DashboardSidebar currentRole={currentRole} />
 
-                <div className="flex flex-1 flex-col">
+                <div className="flex flex-1 flex-col min-w-0">
                     <header className="flex h-14 items-center justify-between border-b border-slate-100 bg-white px-6">
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-3">
+                            <DashboardMobileSidebar currentRole={currentRole} />
                             <h1 className="text-base font-semibold text-slate-800">
                                 {headerTitle}
                             </h1>

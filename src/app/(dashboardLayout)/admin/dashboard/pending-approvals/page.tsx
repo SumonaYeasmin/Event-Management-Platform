@@ -50,90 +50,94 @@ export default function PendingApprovalsPage() {
 
 
       {/* Grid List */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {pendingEvents.map((event) => (
           <div 
             key={event.id}
-            className="bg-white rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col group"
+            className="bg-white rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col group justify-between"
           >
-            {/* Cover Image with Badges */}
-            <div className="relative h-48 w-full overflow-hidden bg-slate-100 shrink-0">
-              <img 
-                src={event.image} 
-                alt={event.title} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
+            <div>
+              {/* Cover Image with Badges */}
+              <div className="relative h-48 w-full overflow-hidden bg-slate-100 shrink-0">
+                <img 
+                  src={event.image} 
+                  alt={event.title} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
 
-              {/* Status and Category Badges (Absolute positioned top-left) */}
-              <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                <span className="bg-amber-500/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-xs">
-                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                  Pending review
-                </span>
-                
-                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs border ${
-                  event.category === 'Technology' 
-                    ? 'bg-indigo-600/90 text-white border-indigo-500/20' 
-                    : 'bg-sky-600/90 text-white border-sky-500/20'
-                }`}>
-                  {event.category}
-                </span>
+                {/* Status and Category Badges (Absolute positioned top-left) */}
+                <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                  <span className="bg-amber-500/90 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-xs">
+                    <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                    Pending review
+                  </span>
+                  
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs border ${
+                    event.category === 'Technology' 
+                      ? 'bg-indigo-600/90 text-white border-indigo-500/20' 
+                      : 'bg-sky-600/90 text-white border-sky-500/20'
+                  }`}>
+                    {event.category}
+                  </span>
+                </div>
+              </div>
+
+              {/* Content Details */}
+              <div className="p-6 space-y-4">
+                <div className="space-y-3.5">
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-slate-900 leading-snug line-clamp-1 hover:text-indigo-600 cursor-pointer transition-colors">
+                    {event.title}
+                  </h3>
+
+                  {/* Organizer info */}
+                  <div className="flex items-center gap-2">
+                    <img 
+                      src={event.organizerAvatar} 
+                      alt={event.organizer} 
+                      className="h-5 w-5 rounded-full bg-slate-100 object-cover shrink-0 border border-slate-200/50"
+                    />
+                    <span className="text-xs text-slate-400 font-semibold">
+                      by {event.organizer}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 h-8">
+                    {event.description}
+                  </p>
+
+                  {/* Details Grid */}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-2 text-xs font-semibold text-slate-500 border-t border-slate-50">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 col-span-2 sm:col-span-1">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span className="truncate">{event.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 col-span-2 sm:col-span-1">
+                      <Users className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{event.seats}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Content Details */}
-            <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-              <div className="space-y-3.5">
-                {/* Title */}
-                <h3 className="text-lg font-bold text-slate-900 leading-snug line-clamp-1 hover:text-indigo-600 cursor-pointer transition-colors">
-                  {event.title}
-                </h3>
-
-                {/* Organizer info */}
-                <div className="flex items-center gap-2">
-                  <img 
-                    src={event.organizerAvatar} 
-                    alt={event.organizer} 
-                    className="h-5 w-5 rounded-full bg-slate-100 object-cover shrink-0 border border-slate-200/50"
-                  />
-                  <span className="text-xs text-slate-400 font-semibold">
-                    by {event.organizer}
-                  </span>
-                </div>
-
-                {/* Description */}
-                <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 h-8">
-                  {event.description}
-                </p>
-
-                {/* Details Grid */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-2 text-xs font-semibold text-slate-500 border-t border-slate-50">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                    <span>{event.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 col-span-2 sm:col-span-1">
-                    <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                    <span className="truncate">{event.location}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 col-span-2 sm:col-span-1">
-                    <Users className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                    <span>{event.seats}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-100">
-                <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 flex-1 cursor-pointer transition-all active:scale-98 text-xs shadow-xs">
+            {/* Action Buttons */}
+            <div className="p-6 pt-0">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-4 border-t border-slate-100">
+                <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 w-full sm:flex-1 cursor-pointer transition-all active:scale-98 text-xs shadow-xs">
                   <Check className="h-3.5 w-3.5" />
                   Approve & publish
                 </button>
-                <button className="border border-slate-200 hover:bg-rose-50 hover:border-rose-100 hover:text-rose-600 text-slate-600 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-all active:scale-98 text-xs">
+                <button className="border border-slate-200 hover:bg-rose-50 hover:border-rose-100 hover:text-rose-600 text-slate-600 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1 w-full sm:w-auto shrink-0 cursor-pointer transition-all active:scale-98 text-xs">
                   <X className="h-3.5 w-3.5" />
                   Reject
                 </button>
