@@ -10,8 +10,9 @@ function OtpVerificationFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
-  // Get the email from URL query parameters dynamically
+  // Get the email and flow from URL query parameters dynamically
   const email = searchParams.get("email") || "";
+  const flow = searchParams.get("flow") || "";
 
   // Array of 6 elements to store the value of each OTP input box
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
@@ -60,52 +61,45 @@ function OtpVerificationFormContent() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto-focus next input box if a value is typed and this is not the last box (index < 5)
-    if (value && index < 5) {
-      const nextInput = inputRefs.current[index + 1];
-      if (nextInput) {
-        nextInput.focus();
-      }
+    // Shift focus forward to the next input box if typed a digit
+    if (value && index < 5 && inputRefs.current[index + 1]) {
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
-  // Triggered when user presses a key (handles Backspace)
+  // Handles focus changes when backspace or navigation keys are pressed
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace") {
-      // If the current box is empty and we are not in the first box, shift focus back
-      if (!otp[index] && index > 0) {
-        const prevInput = inputRefs.current[index - 1];
-        if (prevInput) {
-          prevInput.focus();
-          
-          // Also clear the value in the previous box
-          const newOtp = [...otp];
-          newOtp[index - 1] = "";
-          setOtp(newOtp);
-        }
-      } else {
-        // If the current box has a value, just clear the current box
-        const newOtp = [...otp];
+      const newOtp = [...otp];
+
+      if (otp[index]) {
+        // If the current input has a digit, clear it and remain focused
         newOtp[index] = "";
         setOtp(newOtp);
+      } else if (index > 0) {
+        // If the current input is already empty, clear the previous input and shift focus back
+        newOtp[index - 1] = "";
+        setOtp(newOtp);
+        inputRefs.current[index - 1]?.focus();
       }
     }
   };
 
-  // NEW: Triggered when user pastes a code into the first input box
+  // Clipboard Paste handler
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault(); // Stop native pasting
-    const pastedData = e.clipboardData.getData("text").trim();
-    
-    // Only allow number-based pastes
-    if (!/^[0-9]+$/.test(pastedData)) return;
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text");
 
-    // Slice the first 6 characters and split into digits
+    // Sanitize and ensure only numbers are pasted
+    if (!/^\d+$/.test(pastedData)) return;
+
+    // Split the pasted string into single characters
     const digits = pastedData.slice(0, 6).split("");
+
+    // Fill the OTP state array with new digits, leaving remaining boxes intact
     const newOtp = [...otp];
-    
-    for (let i = 0; i < 6; i++) {
-      newOtp[i] = digits[i] || "";
+    for (let i = 0; i < digits.length; i++) {
+      newOtp[i] = digits[i];
     }
     setOtp(newOtp);
 
@@ -129,8 +123,9 @@ function OtpVerificationFormContent() {
     setIsResending(true);
 
     try {
-      // Calling our separated service
-      const data = await resendOtp(email);
+      // Determine the dynamic OTP type based on the current user flow
+      const otpType = flow === "reset" ? "PASSWORD_RESET" : "ACCOUNT_VERIFY";
+      const data = await resendOtp(email, otpType);
 
       if (data.success) {
         setSuccessMessage("Verification code resent successfully!");
@@ -160,21 +155,33 @@ function OtpVerificationFormContent() {
     }
 
     if (!email) {
-      setErrorMessage("Missing email details. Please return to registration.");
+      setErrorMessage("Missing email details. Please check your recovery request.");
       return;
     }
 
     setIsVerifying(true);
 
     try {
-      // Calling our separated service with 6-digit code
-      const data = await verifyOtp(email, fullCode);
+      // Determine the dynamic OTP type based on the current user flow
+      const otpType = flow === "reset" ? "PASSWORD_RESET" : "ACCOUNT_VERIFY";
+      const data = await verifyOtp(email, fullCode, otpType);
 
       if (data.success) {
-        setSuccessMessage("Account verified successfully! Redirecting...");
-        setTimeout(() => {
-          router.push("/login");
-        }, 1500);
+        if (flow === "reset") {
+          // If in password reset flow, extract the resetToken and redirect to reset page
+          const resetToken = data.data?.resetToken || data.resetToken;
+          setSuccessMessage("Code verified successfully! Preparing password reset...");
+          
+          setTimeout(() => {
+            router.push(`/reset-password?resetToken=${encodeURIComponent(resetToken)}`);
+          }, 1500);
+        } else {
+          // Standard account activation verification flow
+          setSuccessMessage("Account verified successfully! Redirecting...");
+          setTimeout(() => {
+            router.push("/login");
+          }, 1500);
+        }
       } else {
         setErrorMessage(data.message || "Invalid verification code. Please check and try again.");
       }
@@ -200,10 +207,12 @@ function OtpVerificationFormContent() {
       {/* 1. Page Header / Headings */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-[#2e3bb1] tracking-tight mb-2">
-          Verify your account
+          {flow === "reset" ? "Verify Reset OTP" : "Verify your account"}
         </h1>
         <p className="text-slate-500 text-xs md:text-sm">
-          We sent a verification code to{" "}
+          {flow === "reset"
+            ? "We sent a password reset OTP to "
+            : "We sent a verification code to "}
           <strong className="text-slate-700 font-semibold">
             {email ? maskEmail(email) : "your email"}
           </strong>. Enter the 6-digit code below.

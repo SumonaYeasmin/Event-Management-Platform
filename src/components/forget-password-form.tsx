@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { forgotPassword } from "@/src/services/auth";
 import { ArrowLeft } from "lucide-react";
 
 export default function ForgetPasswordForm() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -20,7 +22,11 @@ export default function ForgetPasswordForm() {
       const data = await forgotPassword(email);
 
       if (data.success) {
-        toast.success(data.message || "Password reset link sent! Please check your email.");
+        toast.success(data.message || "OTP sent! Please check your email.");
+        
+        setTimeout(() => {
+          router.push(`/verify-otp?email=${encodeURIComponent(email)}&flow=reset`);
+        }, 1500);
       } else {
         toast.error(data.message || "Something went wrong. Please try again.");
       }
@@ -38,7 +44,7 @@ export default function ForgetPasswordForm() {
           Forgot password?
         </h1>
         <p className="text-slate-500 text-xs md:text-sm">
-          Enter your email address and we'll send you a link to reset your password.
+          Enter your email address and we'll send you an OTP to reset your password.
         </p>
       </div>
 
@@ -71,10 +77,10 @@ export default function ForgetPasswordForm() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              Sending Link...
+              Sending OTP...
             </>
           ) : (
-            "Send Reset Link"
+            "Send OTP"
           )}
         </button>
       </form>

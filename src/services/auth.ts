@@ -4,7 +4,7 @@ const API_BASE_URL = "http://localhost:5000/api/v1/auth";
 /**
  * 1. Service to verify OTP code (Matches your exact backend payload)
  */
-export const verifyOtp = async (email: string, code: string) => {
+export const verifyOtp = async (email: string, code: string, type: string = "ACCOUNT_VERIFY") => {
   try {
     const res = await fetch(`${API_BASE_URL}/verify-otp`, {
       method: "POST",
@@ -14,7 +14,7 @@ export const verifyOtp = async (email: string, code: string) => {
       body: JSON.stringify({ 
         email, 
         code, 
-        type: "ACCOUNT_VERIFY" 
+        type 
       }),
     });
     
@@ -26,9 +26,9 @@ export const verifyOtp = async (email: string, code: string) => {
 };
 
 /**
- * 2. Service to resend OTP code (Updated to include type: "ACCOUNT_VERIFY")
+ * 2. Service to resend OTP code (Updated to support dynamic type)
  */
-export const resendOtp = async (email: string) => {
+export const resendOtp = async (email: string, type: string = "ACCOUNT_VERIFY") => {
   try {
     const res = await fetch(`${API_BASE_URL}/resend-otp`, {
       method: "POST",
@@ -37,7 +37,7 @@ export const resendOtp = async (email: string) => {
       },
       body: JSON.stringify({ 
         email,
-        type: "ACCOUNT_VERIFY" // Added to match the resend API specification
+        type
       }),
     });
 
