@@ -20,6 +20,7 @@ export default function LoginForm() {
 
     try {
       const data = await loginUser(email, password);
+      console.log(data)
 
       if (data.success) {
         toast.success(data.message || "Login successful!");
