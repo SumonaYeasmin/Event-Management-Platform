@@ -68,13 +68,15 @@ export default function OrganizerOverviewPage() {
       {/* 1. Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm sm:text-base
+           text-slate-500">
             Track your events and registrations at a glance.
           </p>
         </div>
         <Link 
           href="/organizer/dashboard/create-event" 
-          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-indigo-600/10 cursor-pointer self-start sm:self-auto"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-sm sm:text-base
+           font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-indigo-600/10 cursor-pointer self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           Create event
@@ -86,7 +88,7 @@ export default function OrganizerOverviewPage() {
         {/* Card 1: Total Events */}
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-sm font-medium text-slate-500">Total events</span>
+            <span className="text-sm sm:text-base font-medium text-slate-500">Total events</span>
             <h3 className="text-3xl font-bold text-slate-900">5</h3>
           </div>
           <div className="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -97,7 +99,8 @@ export default function OrganizerOverviewPage() {
         {/* Card 2: Published */}
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-sm font-medium text-slate-500">Published</span>
+            <span className="text-sm sm:text-base
+             font-medium text-slate-500">Published</span>
             <h3 className="text-3xl font-bold text-slate-900">3</h3>
           </div>
           <div className="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -108,7 +111,8 @@ export default function OrganizerOverviewPage() {
         {/* Card 3: Total Registrations */}
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-sm font-medium text-slate-500">Total registrations</span>
+            <span className="text-sm sm:text-base
+             font-medium text-slate-500">Total registrations</span>
             <h3 className="text-3xl font-bold text-slate-900">5</h3>
           </div>
           <div className="h-12 w-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
@@ -119,7 +123,8 @@ export default function OrganizerOverviewPage() {
         {/* Card 4: Avg. per Event */}
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-sm font-medium text-slate-500">Avg. per event</span>
+            <span className="text-sm sm:text-base
+             font-medium text-slate-500">Avg. per event</span>
             <h3 className="text-3xl font-bold text-slate-900">1</h3>
           </div>
           <div className="h-12 w-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
@@ -132,7 +137,7 @@ export default function OrganizerOverviewPage() {
       <div className="bg-white rounded-2xl border border-slate-100 shadow-xs p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-slate-900">Recent events</h2>
-          <Link href="/organizer/dashboard/my-events" className="text-xs font-semibold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors">
+          <Link href="/organizer/dashboard/my-events" className="text-sm sm:text-base font-semibold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors">
             Manage all <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
@@ -143,18 +148,18 @@ export default function OrganizerOverviewPage() {
             const isCompleted = event.status === 'Completed';
             const isPending = event.status === 'Pending';
             return (
-              <div key={event.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 first:pt-0 last:pb-0">
-                <div className="flex items-center gap-4">
+              <div key={event.id} className="py-4 flex flex-col lg:flex-row  gap-4 first:pt-0 last:pb-0">
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4  ">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="h-12 w-20 rounded-lg object-cover bg-slate-100 shrink-0"
+                    className="h-28 w-48 rounded-lg object-cover bg-slate-100 shrink-0 "
                   />
                   <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors leading-tight">
+                    <h4 className="text-sm md:text-base font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors leading-tight">
                       {event.title}
                     </h4>
-                    <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                    <div className="flex flex-wrap items-center gap-1.5 text-sm md:text-base text-slate-500">
                       <Clock className="h-3.5 w-3.5 shrink-0" />
                       <span>{event.date}</span>
                       <span>•</span>
@@ -163,13 +168,13 @@ export default function OrganizerOverviewPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between sm:justify-end gap-6 shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-2.5 sm:pt-0 border-slate-50">
-                  <span className="text-xs font-semibold text-slate-500">
+                <div className="flex items-center justify-between sm:justify-start gap-6 shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-2.5 sm:pt-0 border-slate-50">
+                  <span className=" text-sm lg:text-base font-semibold text-slate-500">
                     {event.seats}
                   </span>
                   
                   {/* Status Badge */}
-                  <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
+                  <span className={`text-sm lg:text-base font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
                     isCompleted ? 'bg-slate-50 text-slate-600 border-slate-200' :
                     isPending ? 'bg-amber-50 text-amber-600 border-amber-100' :
                     'bg-emerald-50 text-emerald-600 border-emerald-100'

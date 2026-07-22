@@ -1,12 +1,53 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function RegisterForm() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+
+      const res = await fetch("http://localhost:5000/api/v1/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          confirmPassword,
+        }),
+      });
+
+      const data = await res.json();
+      
+      if (data.success) {
+        alert(data.message || "Registration successful! Please verify your email.");
+        router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
+      } else {
+        alert(data.message || "Registration failed!");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("Failed to connect to the backend server.");
+    }
   };
+
 
   return (
     <div className="w-full max-w-90 flex flex-col justify-center">
@@ -26,6 +67,7 @@ export default function RegisterForm() {
           </label>
           <input
             id="fullname"
+            name="fullname"
             type="text"
             placeholder="Jane Doe"
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm"
@@ -38,6 +80,7 @@ export default function RegisterForm() {
           </label>
           <input
             id="email"
+            name="email"
             type="email"
             placeholder="you@example.com"
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm"
@@ -50,7 +93,22 @@ export default function RegisterForm() {
           </label>
           <input
             id="password"
+            name="password"
             type="password"
+            placeholder="••••••••"
+            className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="confirmPassword" className="block text-xs md:text-sm font-semibold text-slate-700 mb-1.5">
+            Confirm Password
+          </label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword" // <--- name অ্যাট্রিবিউট
+            type="password"
+            required
             placeholder="••••••••"
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm"
           />

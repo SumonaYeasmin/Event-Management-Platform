@@ -9,7 +9,7 @@ export default function CreateEventPage() {
       <div>
         <Link 
           href="/organizer/dashboard/my-events" 
-          className="text-xs font-semibold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors cursor-pointer"
+          className="text-base font-semibold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors cursor-pointer"
         >
           <ArrowLeft className="h-3 w-3" />
           Back to my events
@@ -29,7 +29,7 @@ export default function CreateEventPage() {
             <div className="space-y-4">
               {/* Event Title */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700">Event title</label>
+                <label className="text-base font-semibold text-slate-700">Event title</label>
                 <input 
                   type="text" 
                   placeholder="e.g. Frontend Conf 2026" 
@@ -39,7 +39,7 @@ export default function CreateEventPage() {
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700">Description</label>
+                <label className="text-base font-semibold text-slate-700">Description</label>
                 <textarea 
                   rows={4}
                   placeholder="What is this event about?" 
@@ -50,7 +50,7 @@ export default function CreateEventPage() {
               {/* Category & Event Type */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Category</label>
+                  <label className="text-base font-semibold text-slate-700">Category</label>
                   <select className="w-full text-sm border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 bg-white text-slate-700">
                     <option value="">Select category</option>
                     <option value="technology">Technology</option>
@@ -61,7 +61,7 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Event type</label>
+                  <label className="text-base font-semibold text-slate-700">Event type</label>
                   <select className="w-full text-sm border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 bg-white text-slate-700">
                     <option value="">Select type</option>
                     <option value="in-person">In-person</option>
@@ -80,7 +80,7 @@ export default function CreateEventPage() {
               {/* Event Date & Registration Deadline */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Event date</label>
+                  <label className="text-base font-semibold text-slate-700">Event date</label>
                   <input 
                     type="date" 
                     className="w-full text-sm border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-500"
@@ -88,7 +88,7 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Registration deadline</label>
+                  <label className="text-base font-semibold text-slate-700">Registration deadline</label>
                   <input 
                     type="date" 
                     className="w-full text-sm border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-500"
@@ -99,7 +99,7 @@ export default function CreateEventPage() {
               {/* Start Time & End Time */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Start time</label>
+                  <label className="text-base font-semibold text-slate-700">Start time</label>
                   <input 
                     type="time" 
                     className="w-full text-sm border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-500"
@@ -107,7 +107,7 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">End time</label>
+                  <label className="text-base font-semibold text-slate-700">End time</label>
                   <input 
                     type="time" 
                     className="w-full text-sm border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 text-slate-500"
@@ -117,7 +117,7 @@ export default function CreateEventPage() {
 
               {/* Venue / Location */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700">Venue / location</label>
+                <label className="text-base font-semibold text-slate-700">Venue / location</label>
                 <input 
                   type="text" 
                   placeholder="e.g. Convention Center Hall A" 
@@ -128,7 +128,7 @@ export default function CreateEventPage() {
               {/* Maximum Participants */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700">Maximum participants</label>
+                  <label className="text-base font-semibold text-slate-700">Maximum participants</label>
                   <input 
                     type="number" 
                     min="1"
@@ -158,7 +158,7 @@ export default function CreateEventPage() {
               </div>
 
               {/* Upload Button */}
-              <button className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer">
+              <button className="flex items-center gap-1.5 text-base font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer">
                 <ImageIcon className="h-4 w-4" />
                 Choose a cover
               </button>
@@ -188,20 +188,20 @@ export default function CreateEventPage() {
           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs space-y-4">
             <div className="space-y-1">
               <h3 className="text-sm font-bold text-slate-800">Publish</h3>
-              <p className="text-xs text-slate-400 leading-normal">
+              <p className="text-base text-slate-400 leading-normal">
                 Events go live only after admin approval. Save a draft or submit for review.
               </p>
             </div>
 
             <div className="space-y-3 pt-1">
               {/* Submit for approval */}
-              <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 w-full cursor-pointer shadow-sm shadow-indigo-600/10 active:scale-98 transition-all text-xs">
+              <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 w-full cursor-pointer shadow-sm shadow-indigo-600/10 active:scale-98 transition-all text-base">
                 <Send className="h-3.5 w-3.5" />
                 Submit for approval
               </button>
 
               {/* Save as Draft */}
-              <button className="border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 w-full cursor-pointer active:scale-98 transition-all text-xs">
+              <button className="border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 w-full cursor-pointer active:scale-98 transition-all text-base">
                 <Save className="h-3.5 w-3.5 text-slate-400" />
                 Save as draft
               </button>

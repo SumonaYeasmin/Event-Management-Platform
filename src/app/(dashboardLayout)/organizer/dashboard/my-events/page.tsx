@@ -1,6 +1,9 @@
-import React from 'react'
+"use client"
+
+import React, { useState } from 'react'
 import { Users, Edit, Eye, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { cn } from "@/src/lib/utils"
 
 interface OrganizerEvent {
   id: string
@@ -66,39 +69,57 @@ const organizerEvents: OrganizerEvent[] = [
   }
 ]
 
+type FilterStatus = 'All' | 'Draft' | 'Pending' | 'Published' | 'Rejected' | 'Completed';
+
 export default function MyEventsPage() {
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>('All');
+
+  // get count helper
+  const getCount = (status: FilterStatus) => {
+    if (status === 'All') return organizerEvents.length;
+    return organizerEvents.filter(e => e.status === status).length;
+  };
+
+  // filtered list
+  const filteredEvents = organizerEvents.filter((event) => {
+    if (activeFilter === 'All') return true;
+    return event.status === activeFilter;
+  });
+
+  const filterOptions: FilterStatus[] = ['All', 'Draft', 'Pending', 'Published', 'Rejected', 'Completed'];
+
   return (
     <div className="space-y-6 w-full">
 
 
       {/* Filter Badges and Create Event Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm shadow-indigo-600/10 cursor-pointer">
-            All <span className="ml-1 opacity-80">5</span>
-          </button>
-          <button className="bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors">
-            Draft <span className="ml-1 text-slate-400">0</span>
-          </button>
-          <button className="bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors">
-            Pending <span className="ml-1 text-slate-400">1</span>
-          </button>
-          <button className="bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors">
-            Published <span className="ml-1 text-slate-400">3</span>
-          </button>
-          <button className="bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors">
-            Rejected <span className="ml-1 text-slate-400">0</span>
-          </button>
-          <button className="bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors">
-            Completed <span className="ml-1 text-slate-400">1</span>
-          </button>
+        <div className="flex flex-wrap items-center gap-4 md:gap-5 lg:gap-7">
+          {filterOptions.map((option) => {
+            const isActive = activeFilter === option;
+            const count = getCount(option);
+            return (
+              <button
+                key={option}
+                onClick={() => setActiveFilter(option)}
+                className={cn(
+                  "px-3 md:px-4 py-1.5 md:py-2.5 rounded-lg text-base font-semibold cursor-pointer transition-all duration-150",
+                  isActive
+                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/10"
+                    : "bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 hover:text-slate-900"
+                )}
+              >
+                {option} <span className={cn("ml-1", isActive ? "opacity-80" : "text-slate-400")}>{count}</span>
+              </button>
+            )
+          })}
         </div>
 
         {/* Create Event Button */}
         <Link 
           href="/organizer/dashboard/create-event" 
-          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-600/10 cursor-pointer self-start md:self-auto"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-base font-semibold lg:px-4 px-2 lg:py-2.5 py-1.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-600/10 cursor-pointer self-start md:self-auto"
         >
           <Plus className="h-4 w-4" />
           Create event
@@ -107,21 +128,19 @@ export default function MyEventsPage() {
 
       {/* Events List */}
       <div className="space-y-4">
-        {organizerEvents.map((event) => {
+        {filteredEvents.map((event) => {
           const isCompleted = event.status === 'Completed';
           const isPending = event.status === 'Pending';
           return (
             <div
               key={event.id}
-              // className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col md:flex-row items-start md:items-center gap-5"
-              className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col lg:flex-row items-start lg:items-center gap-5"
+              className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col lg:flex-row items-start lg:items-center gap-3"
             >
               {/* Event Image */}
               <img
                 src={event.image}
                 alt={event.title}
-                // className="w-full md:w-36 h-24 rounded-xl object-cover bg-slate-100 shrink-0"
-                className="w-full lg:w-36 h-24 rounded-xl object-cover bg-slate-100 shrink-0"
+                className="w-full  lg:w-40 h-32 md:h-40 rounded-xl object-cover bg-slate-100 shrink-0"
               />
 
               {/* Event Info */}
@@ -129,7 +148,7 @@ export default function MyEventsPage() {
                 {/* Badges */}
                 <div className="flex flex-wrap items-center gap-2">
                   {/* Status Badge */}
-                  <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
+                  <span className={`text-sm font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
                     isCompleted ? 'bg-slate-50 text-slate-600 border-slate-200' :
                     isPending ? 'bg-amber-50 text-amber-600 border-amber-100' :
                     'bg-emerald-50 text-emerald-600 border-emerald-100'
@@ -143,7 +162,7 @@ export default function MyEventsPage() {
                   </span>
 
                   {/* Category Badge */}
-                  <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${
+                  <span className={`text-sm font-semibold px-2.5 py-0.5 rounded-full border ${
                     event.category === 'Technology' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
                     event.category === 'Business' ? 'bg-sky-50 text-sky-600 border-sky-100' :
                     event.category === 'Education' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
@@ -154,28 +173,27 @@ export default function MyEventsPage() {
                 </div>
 
                 {/* Event Title */}
-                <h3 className="text-base font-bold text-slate-900 leading-snug">
+                <h3 className="sm:text-base md:text-lg font-bold text-slate-900 leading-snug">
                   {event.title}
                 </h3>
 
                 {/* Date & Registered info */}
-                <p className="text-xs text-slate-500 font-medium">
+                <p className="sm:text-sm md:text-base text-slate-500 font-medium">
                   {event.date} · {event.registered}
                 </p>
               </div>
 
-              {/* <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end shrink-0"> */}
               <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start lg:justify-end shrink-0">
-                <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-1.5 cursor-pointer">
+                <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-base font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 cursor-pointer">
                   <Users className="h-3.5 w-3.5 text-slate-400" />
                   Participants
                 </button>
-                <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-1.5 cursor-pointer">
+                <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-base font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 cursor-pointer">
                   <Edit className="h-3.5 w-3.5 text-slate-400" />
                   Edit
                 </button>
                 {event.hasViewButton && (
-                  <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-1.5 cursor-pointer">
+                  <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-base font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 cursor-pointer">
                     <Eye className="h-3.5 w-3.5 text-slate-400" />
                     View
                   </button>
