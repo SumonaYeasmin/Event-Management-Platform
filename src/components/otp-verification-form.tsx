@@ -1,30 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState, useRef, useEffect, Suspense } from "react";
+import { verifyOtp, resendOtp } from "@/src/services/auth";
 
-// We separate the inner form content so Next.js can wrap it in a Suspense boundary.
-// useSearchParams() requires Suspense for static build rendering in Next.js.
+// Inner form content separated for Suspense wrapping
 function OtpVerificationFormContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   
-  // 1. Get the email from URL query parameters dynamically
-  const email = searchParams.get("email") || "you@example.com";
+  // Get the email from URL query parameters dynamically
+  const email = searchParams.get("email") || "";
 
-  // 2. Array of 6 elements to store the value of each OTP input box
+  // Array of 6 elements to store the value of each OTP input box
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
 
-  // 3. Array of refs to control the focus on each input element programmatically
+  // Array of refs to control the focus on each input element programmatically
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // 4. Countdown timer state (seconds remaining)
+  // Countdown timer states (starts at 60 seconds)
   const [countdown, setCountdown] = useState<number>(60);
-  
-  // 5. Boolean to track if user can click the resend button
   const [canResend, setCanResend] = useState<boolean>(false);
 
-  // NEW STATES: 6. States for loading spinners and alert message banners
+  // Status and loading states
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isResending, setIsResending] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -37,28 +36,28 @@ function OtpVerificationFormContent() {
     }
   }, []);
 
-  // Run timer on mount and decrement it every second until it hits 0
+  // Run timer countdown on mount
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
-      return () => clearTimeout(timer); // Cleanup timer if component unmounts
+      return () => clearTimeout(timer);
     } else {
-      setCanResend(true); // Countdown reached 0, user can now resend
+      setCanResend(true);
     }
   }, [countdown]);
 
   // Triggered when the user types a digit in one of the input fields
   const handleChange = (value: string, index: number) => {
-    // Regular expression: Allow only single digits (0-9). Disallow other characters.
+    // Only allow single digits (0-9)
     if (value && !/^[0-9]$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto-focus next input box if a value is typed and this is not the last box (index < 5)
+    // Auto-focus next input box if a value is typed and this is not the last box
     if (value && index < 5) {
       const nextInput = inputRefs.current[index + 1];
       if (nextInput) {
@@ -67,7 +66,7 @@ function OtpVerificationFormContent() {
     }
   };
 
-  // Triggered when user presses a key (helps us handle Backspace key specifically)
+  // Triggered when user presses a key (handles Backspace)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace") {
       // If the current box is empty and we are not in the first box, shift focus back
@@ -90,6 +89,83 @@ function OtpVerificationFormContent() {
     }
   };
 
+  // Handles resending the OTP code using separated auth services
+  const handleResendClick = async () => {
+    if (!email) {
+      setErrorMessage("No email associated. Please register again.");
+      return;
+    }
+
+    setErrorMessage("");
+    setSuccessMessage("");
+    setIsResending(true);
+
+    try {
+      // Calling our separated service
+      const data = await resendOtp(email);
+
+      if (data.success) {
+        setSuccessMessage("Verification code resent successfully!");
+        setCountdown(60);
+        setCanResend(false);
+      } else {
+        setErrorMessage(data.message || "Failed to resend verification code.");
+      }
+    } catch (error: any) {
+      setErrorMessage(error.message || "Failed to connect. Please check your connection.");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  // Handles verifying the OTP code using separated auth services
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    const fullCode = otp.join("");
+    if (fullCode.length < 6) {
+      setErrorMessage("Please enter all 6 digits of the verification code.");
+      return;
+    }
+
+    if (!email) {
+      setErrorMessage("Missing email details. Please return to registration.");
+      return;
+    }
+
+    setIsVerifying(true);
+
+    try {
+      // Calling our separated service
+      const data = await verifyOtp(email, fullCode);
+
+      if (data.success) {
+        setSuccessMessage("Account verified successfully! Redirecting...");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1500);
+      } else {
+        setErrorMessage(data.message || "Invalid verification code. Please check and try again.");
+      }
+    } catch (error: any) {
+      setErrorMessage(error.message || "Failed to connect. Please check your connection.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  // Helper to format email text gracefully (e.g. te**@example.com)
+  const maskEmail = (emailStr: string) => {
+    if (!emailStr) return "";
+    const parts = emailStr.split("@");
+    if (parts.length !== 2) return emailStr;
+    const [name, domain] = parts;
+    const maskedName = name.length > 2 ? `${name.substring(0, 2)}••••` : name;
+    return `${maskedName}@${domain}`;
+  };
+
   return (
     <div className="w-full max-w-md flex flex-col justify-center">
       {/* 1. Page Header / Headings */}
@@ -99,21 +175,34 @@ function OtpVerificationFormContent() {
         </h1>
         <p className="text-slate-500 text-xs md:text-sm">
           We sent a verification code to{" "}
-          <strong className="text-slate-700 font-semibold">{email}</strong>. 
-          Enter the 6-digit code below.
+          <strong className="text-slate-700 font-semibold">
+            {email ? maskEmail(email) : "your email"}
+          </strong>. Enter the 6-digit code below.
         </p>
       </div>
 
-      {/* 2. Static Alert Message (Example: Success/Error states) */}
-      <div className="mb-6 p-3 bg-indigo-50/50 border border-indigo-100 text-indigo-700 rounded-lg text-xs md:text-sm flex items-start gap-2.5">
-        <svg className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span>Type numbers only. The cursor will automatically shift to the next box.</span>
-      </div>
+      {/* 2. Error Message Banner */}
+      {errorMessage && (
+        <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs md:text-sm flex items-start gap-2.5">
+          <svg className="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
-      {/* 3. OTP Code Verification Form */}
-      <form className="space-y-6">
+      {/* 3. Success Message Banner */}
+      {successMessage && (
+        <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-xs md:text-sm flex items-start gap-2.5">
+          <svg className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{successMessage}</span>
+        </div>
+      )}
+
+      {/* 4. OTP Code Verification Form */}
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-xs md:text-sm font-semibold text-slate-700 mb-3">
             Verification Code
@@ -133,23 +222,45 @@ function OtpVerificationFormContent() {
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 placeholder="•"
-                className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center text-lg md:text-xl font-bold bg-white text-slate-900 border border-slate-200 rounded-xl shadow-xs transition-all duration-150 outline-none placeholder-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
+                className={`w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center text-lg md:text-xl font-bold bg-white text-slate-900 border rounded-xl shadow-xs transition-all duration-150 outline-none placeholder-slate-300
+                  ${
+                    inputRefs.current[index] === document.activeElement
+                      ? "border-indigo-600 ring-2 ring-indigo-100"
+                      : "border-slate-200 hover:border-slate-300"
+                  }
+                  ${digit ? "bg-indigo-50/20 border-indigo-300" : ""}
+                `}
+                disabled={isVerifying}
+                autoComplete="one-time-code"
                 inputMode="numeric"
               />
             ))}
           </div>
         </div>
 
-        {/* 4. Action Button */}
+        {/* 5. Action Button */}
         <button
           type="submit"
-          className="w-full bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium py-3 px-4 rounded-xl shadow-md transition-all duration-150 ease-in-out text-center text-xs md:text-sm cursor-pointer flex items-center justify-center gap-2"
+          disabled={isVerifying || otp.some(d => d === "")}
+          className={`w-full bg-[#4f46e5] hover:bg-[#4338ca] text-white font-medium py-3 px-4 rounded-xl shadow-md transition-all duration-150 ease-in-out text-center text-xs md:text-sm cursor-pointer flex items-center justify-center gap-2
+            ${(isVerifying || otp.some(d => d === "")) ? "opacity-60 cursor-not-allowed hover:bg-[#4f46e5]" : ""}
+          `}
         >
-          Verify & Activate
+          {isVerifying ? (
+            <>
+              <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Verifying Code...
+            </>
+          ) : (
+            "Verify & Activate"
+          )}
         </button>
       </form>
 
-      {/* 5. Footer Links and Countdown */}
+      {/* 6. Footer Links and Countdown */}
       <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-xs md:text-base">
         
         {/* Conditional rendering for resend vs countdown */}
@@ -158,14 +269,11 @@ function OtpVerificationFormContent() {
             Didn't receive the code?{" "}
             <button
               type="button"
-              onClick={() => {
-                // Restart timer when resend button is clicked
-                setCountdown(60);
-                setCanResend(false);
-              }}
-              className="text-[#4f46e5] font-semibold hover:underline cursor-pointer"
+              onClick={handleResendClick}
+              disabled={isResending}
+              className="text-[#4f46e5] font-semibold hover:underline cursor-pointer disabled:opacity-50"
             >
-              Resend OTP
+              {isResending ? "Resending..." : "Resend OTP"}
             </button>
           </p>
         ) : (
@@ -194,7 +302,7 @@ function OtpVerificationFormContent() {
   );
 }
 
-// Wrapper component providing the required Suspense boundary for next/navigation hooks
+// Wrapper component providing the required Suspense boundary
 export default function OtpVerificationForm() {
   return (
     <Suspense fallback={
