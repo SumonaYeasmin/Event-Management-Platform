@@ -1,22 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import React, { useState, useRef, useEffect, Suspense } from "react";
 
-export default function OtpVerificationForm() {
-  const email = "you@example.com";
+// We separate the inner form content so Next.js can wrap it in a Suspense boundary.
+// useSearchParams() requires Suspense for static build rendering in Next.js.
+function OtpVerificationFormContent() {
+  const searchParams = useSearchParams();
+  
+  // 1. Get the email from URL query parameters dynamically
+  const email = searchParams.get("email") || "you@example.com";
 
-  // 1. Array of 6 elements to store the value of each OTP input box
+  // 2. Array of 6 elements to store the value of each OTP input box
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
 
-  // 2. Array of refs to control the focus on each input element programmatically
+  // 3. Array of refs to control the focus on each input element programmatically
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // NEW: 3. Countdown timer state (seconds remaining)
+  // 4. Countdown timer state (seconds remaining)
   const [countdown, setCountdown] = useState<number>(60);
   
-  // NEW: 4. Boolean to track if user can click the resend button
+  // 5. Boolean to track if user can click the resend button
   const [canResend, setCanResend] = useState<boolean>(false);
+
+  // NEW STATES: 6. States for loading spinners and alert message banners
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [isResending, setIsResending] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   // Automatically focus the first input box when the component loads
   useEffect(() => {
@@ -25,7 +37,7 @@ export default function OtpVerificationForm() {
     }
   }, []);
 
-  // NEW: 5. Run timer on mount and decrement it every second until it hits 0
+  // Run timer on mount and decrement it every second until it hits 0
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => {
@@ -140,7 +152,7 @@ export default function OtpVerificationForm() {
       {/* 5. Footer Links and Countdown */}
       <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-xs md:text-base">
         
-        {/* NEW: Conditional rendering for resend vs countdown */}
+        {/* Conditional rendering for resend vs countdown */}
         {canResend ? (
           <p className="text-slate-500">
             Didn't receive the code?{" "}
@@ -179,5 +191,22 @@ export default function OtpVerificationForm() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrapper component providing the required Suspense boundary for next/navigation hooks
+export default function OtpVerificationForm() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center space-y-4">
+        <svg className="animate-spin h-8 w-8 text-[#4f46e5]" fill="none" viewBox="0 0 24 24">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        </svg>
+        <span className="text-slate-500 text-sm">Loading verification...</span>
+      </div>
+    }>
+      <OtpVerificationFormContent />
+    </Suspense>
   );
 }
