@@ -1,7 +1,12 @@
+import ResetPasswordForm from "@/src/components/reset-password-form";
+
 export default function ResetPasswordPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <h1 className="text-xl font-semibold">Reset Password Page</h1>
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#f1f5f9] p-4 md:p-8">
+      {/* Centered Premium Card Container */}
+      <div className="w-full max-w-md bg-[#fcfdfe] rounded-2xl md:rounded-3xl shadow-xl border border-slate-100 px-6 py-10 md:px-10 lg:px-12">
+        <ResetPasswordForm />
+      </div>
     </div>
   );
 }
