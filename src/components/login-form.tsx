@@ -85,9 +85,14 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-xs md:text-sm font-semibold text-slate-700 mb-1.5">
-            Password
-          </label>
+          <div className="flex justify-between items-center mb-1.5">
+            <label htmlFor="password" className="block text-xs md:text-sm font-semibold text-slate-700">
+              Password
+            </label>
+            <Link href="/forget-password" className="text-xs text-[#4f46e5] hover:underline font-semibold">
+              Forgot password?
+            </Link>
+          </div>
           <input
             id="password"
             name="password"
