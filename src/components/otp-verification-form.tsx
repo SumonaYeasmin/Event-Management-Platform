@@ -1,11 +1,64 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 export default function OtpVerificationForm() {
-  // We'll use a static placeholder email for now
   const email = "you@example.com";
+
+  // 1. Array of 6 elements to store the value of each OTP input box
+  const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
+
+  // 2. Array of refs to control the focus on each input element programmatically
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Automatically focus the first input box when the component loads
+  useEffect(() => {
+    if (inputRefs.current[0]) {
+      inputRefs.current[0].focus();
+    }
+  }, []);
+
+  // 3. Triggered when the user types a digit in one of the input fields
+  const handleChange = (value: string, index: number) => {
+    // Regular expression: Allow only single digits (0-9). Disallow other characters.
+    if (value && !/^[0-9]$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Auto-focus next input box if a value is typed and this is not the last box (index < 5)
+    if (value && index < 5) {
+      const nextInput = inputRefs.current[index + 1];
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+  };
+
+  // 4. Triggered when user presses a key (helps us handle Backspace key specifically)
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Backspace") {
+      // If the current box is empty and we are not in the first box, shift focus back
+      if (!otp[index] && index > 0) {
+        const prevInput = inputRefs.current[index - 1];
+        if (prevInput) {
+          prevInput.focus();
+          
+          // Also clear the value in the previous box
+          const newOtp = [...otp];
+          newOtp[index - 1] = "";
+          setOtp(newOtp);
+        }
+      } else {
+        // If the current box has a value, just clear the current box
+        const newOtp = [...otp];
+        newOtp[index] = "";
+        setOtp(newOtp);
+      }
+    }
+  };
 
   return (
     <div className="w-full max-w-md flex flex-col justify-center">
@@ -26,7 +79,7 @@ export default function OtpVerificationForm() {
         <svg className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span>Please check your email inbox (and spam folder) for the verification code.</span>
+        <span>Type numbers only. The cursor will automatically shift to the next box.</span>
       </div>
 
       {/* 3. OTP Code Verification Form */}
@@ -38,12 +91,17 @@ export default function OtpVerificationForm() {
           
           {/* Grid/Flex container for the 6 boxes */}
           <div className="flex justify-between items-center gap-2 md:gap-3">
-            {/* 6 input fields styled as static boxes */}
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {otp.map((digit, index) => (
               <input
                 key={index}
                 type="text"
                 maxLength={1}
+                value={digit}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
+                onChange={(e) => handleChange(e.target.value, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
                 placeholder="•"
                 className="w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center text-lg md:text-xl font-bold bg-white text-slate-900 border border-slate-200 rounded-xl shadow-xs transition-all duration-150 outline-none placeholder-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
                 inputMode="numeric"
@@ -62,7 +120,7 @@ export default function OtpVerificationForm() {
       </form>
 
       {/* 5. Footer Links and Countdown */}
-      <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-xs md:text-sm">
+      <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-xs md:text-base">
         {/* Resend Countdown Indicator */}
         <p className="text-slate-500 flex items-center gap-1.5 justify-center">
           <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
