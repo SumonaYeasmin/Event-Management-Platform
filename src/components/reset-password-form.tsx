@@ -42,6 +42,7 @@ function ResetPasswordFormContent() {
 
     try {
       const data = await resetPassword(resetToken, newPassword);
+      console.log(data); // Console log output for easy API verification
 
       if (data.success) {
         toast.success(data.message || "Password reset successful! Redirecting to login...");

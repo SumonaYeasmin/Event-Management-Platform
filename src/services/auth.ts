@@ -193,3 +193,20 @@ export const resetPassword = async (resetToken: string, newPassword: string) => 
   }
 };
 
+/**
+ * 8. Service to change password (Authenticated route using fetchWithAuth)
+ */
+export const changePassword = async (oldPassword: string, newPassword: string) => {
+  try {
+    const res = await fetchWithAuth(`${API_BASE_URL}/change-password`, {
+      method: "POST",
+      body: JSON.stringify({ oldPassword, newPassword }),
+    });
+
+    return await res.json();
+  } catch (error) {
+    console.error("changePassword service error:", error);
+    throw new Error("Failed to connect to the authentication server.");
+  }
+};
+
