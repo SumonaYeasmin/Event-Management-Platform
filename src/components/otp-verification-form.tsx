@@ -253,12 +253,7 @@ function OtpVerificationFormContent() {
                 // Trigger handlePaste ONLY on the first input box
                 onPaste={index === 0 ? handlePaste : undefined}
                 placeholder="•"
-                className={`w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center text-lg md:text-xl font-bold bg-white text-slate-900 border rounded-xl shadow-xs transition-all duration-150 outline-none placeholder-slate-300
-                  ${
-                    inputRefs.current[index] === document.activeElement
-                      ? "border-indigo-600 ring-2 ring-indigo-100"
-                      : "border-slate-200 hover:border-slate-300"
-                  }
+                className={`w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center text-lg md:text-xl font-bold bg-white text-slate-900 border border-slate-200 hover:border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 rounded-xl shadow-xs transition-all duration-150 outline-none placeholder-slate-300
                   ${digit ? "bg-indigo-50/20 border-indigo-300" : ""}
                 `}
                 disabled={isVerifying}
