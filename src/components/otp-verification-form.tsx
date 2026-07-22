@@ -12,6 +12,12 @@ export default function OtpVerificationForm() {
   // 2. Array of refs to control the focus on each input element programmatically
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  // NEW: 3. Countdown timer state (seconds remaining)
+  const [countdown, setCountdown] = useState<number>(60);
+  
+  // NEW: 4. Boolean to track if user can click the resend button
+  const [canResend, setCanResend] = useState<boolean>(false);
+
   // Automatically focus the first input box when the component loads
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -19,7 +25,19 @@ export default function OtpVerificationForm() {
     }
   }, []);
 
-  // 3. Triggered when the user types a digit in one of the input fields
+  // NEW: 5. Run timer on mount and decrement it every second until it hits 0
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer); // Cleanup timer if component unmounts
+    } else {
+      setCanResend(true); // Countdown reached 0, user can now resend
+    }
+  }, [countdown]);
+
+  // Triggered when the user types a digit in one of the input fields
   const handleChange = (value: string, index: number) => {
     // Regular expression: Allow only single digits (0-9). Disallow other characters.
     if (value && !/^[0-9]$/.test(value)) return;
@@ -37,7 +55,7 @@ export default function OtpVerificationForm() {
     }
   };
 
-  // 4. Triggered when user presses a key (helps us handle Backspace key specifically)
+  // Triggered when user presses a key (helps us handle Backspace key specifically)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === "Backspace") {
       // If the current box is empty and we are not in the first box, shift focus back
@@ -121,14 +139,34 @@ export default function OtpVerificationForm() {
 
       {/* 5. Footer Links and Countdown */}
       <div className="mt-8 flex flex-col items-center justify-center gap-3 text-center text-xs md:text-base">
-        {/* Resend Countdown Indicator */}
-        <p className="text-slate-500 flex items-center gap-1.5 justify-center">
-          <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Resend code in{" "}
-          <span className="font-semibold text-slate-700">0:59</span>
-        </p>
+        
+        {/* NEW: Conditional rendering for resend vs countdown */}
+        {canResend ? (
+          <p className="text-slate-500">
+            Didn't receive the code?{" "}
+            <button
+              type="button"
+              onClick={() => {
+                // Restart timer when resend button is clicked
+                setCountdown(60);
+                setCanResend(false);
+              }}
+              className="text-[#4f46e5] font-semibold hover:underline cursor-pointer"
+            >
+              Resend OTP
+            </button>
+          </p>
+        ) : (
+          <p className="text-slate-500 flex items-center gap-1.5 justify-center">
+            <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Resend code in{" "}
+            <span className="font-semibold text-slate-700">
+              0:{countdown.toString().padStart(2, "0")}
+            </span>
+          </p>
+        )}
 
         {/* Navigation back */}
         <div className="mt-4 border-t border-slate-100 pt-4 w-full text-center">
