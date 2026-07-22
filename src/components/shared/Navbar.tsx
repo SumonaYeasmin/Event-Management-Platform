@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Navbar() {
+  const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
@@ -101,7 +104,7 @@ export default function Navbar() {
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 origin-top-right">
               {/* Dashboard Link */}
               <Link 
-                href="/dashboard" 
+                href="/dashboard/overview" 
                 onClick={() => setIsDropdownOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition font-medium"
               >
@@ -132,7 +135,11 @@ export default function Navbar() {
               <button 
                 onClick={() => {
                   setIsDropdownOpen(false);
-                  alert("Logging out...");
+                  localStorage.removeItem("accessToken");
+                  localStorage.removeItem("refreshToken");
+                  localStorage.removeItem("userRole");
+                  toast.success("Logged out successfully!");
+                  router.push("/login");
                 }}
                 className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50/50 transition font-semibold text-left cursor-pointer"
               >
