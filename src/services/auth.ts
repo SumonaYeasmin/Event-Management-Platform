@@ -153,3 +153,43 @@ export const fetchWithAuth = async (url: string, options: any = {}) => {
   return fetch(url, options);
 };
 
+/**
+ * 6. Service to request password reset link (forgot password)
+ */
+export const forgotPassword = async (email: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    return await res.json();
+  } catch (error) {
+    console.error("forgotPassword service error:", error);
+    throw new Error("Failed to connect to the authentication server.");
+  }
+};
+
+/**
+ * 7. Service to reset password using token
+ */
+export const resetPassword = async (resetToken: string, newPassword: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ resetToken, newPassword }),
+    });
+
+    return await res.json();
+  } catch (error) {
+    console.error("resetPassword service error:", error);
+    throw new Error("Failed to connect to the authentication server.");
+  }
+};
+
