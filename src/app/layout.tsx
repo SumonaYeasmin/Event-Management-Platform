@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 import { TooltipProvider } from "@/src/components/ui/tooltip";
+import { Toaster } from "react-hot-toast";
 
 
 const geistSans = Geist({
@@ -32,7 +33,8 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <TooltipProvider>{children}</TooltipProvider>
-        </body>
+        <Toaster position="top-center" reverseOrder={false} />
+      </body>
     </html>
   );
 }

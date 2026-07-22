@@ -47,3 +47,22 @@ export const resendOtp = async (email: string) => {
     throw new Error("Failed to connect to the authentication server.");
   }
 };
+
+// 3. Service to login user
+export const loginUser = async (email: string, password: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }), // ইমেইল ও পাসওয়ার্ড পাঠানো হচ্ছে
+    });
+    
+    return await res.json();
+  } catch (error) {
+    console.error("loginUser service error:", error);
+    throw new Error("Failed to connect to the authentication server.");
+  }
+};
+
