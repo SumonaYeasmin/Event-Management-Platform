@@ -4,8 +4,10 @@ import { DashboardSidebar } from "@/src/components/modules/Dashboard/DashboardSi
 import { SidebarProvider, SidebarTrigger } from "@/src/components/ui/sidebar";
 import { User, CalendarCheck, ShieldCheck } from "lucide-react";
 import DashboardMobileSidebar from "@/src/components/modules/Dashboard/DashboardMobileSidebar";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
+type DashboardRole = "USER" | "ORGANIZER" | "ADMIN";
 
 export default function DashboardLayout({
     children,
@@ -14,9 +16,15 @@ export default function DashboardLayout({
 }) {
     const pathname = usePathname();
 
-    // 💡 ম্যাজিক ভ্যারিয়েবল: ফ্রন্টএন্ড ডিজাইন করার সময় এটা ম্যানুয়ালি চেঞ্জ করবে।
-    // অপশনগুলো হলো: "USER" | "ORGANIZER" | "ADMIN"
-    const currentRole = "ORGANIZER";
+    // Dynamically retrieve the typed user role from localStorage
+    const [currentRole, setCurrentRole] = useState<DashboardRole>("USER");
+
+    useEffect(() => {
+        const savedRole = localStorage.getItem("userRole") as DashboardRole;
+        if (savedRole && (savedRole === "USER" || savedRole === "ORGANIZER" || savedRole === "ADMIN")) {
+            setCurrentRole(savedRole);
+        }
+    }, []);
 
     const getHeaderTitle = (path: string) => {
         if (path.endsWith("/dashboard/overview")) return "Overview";

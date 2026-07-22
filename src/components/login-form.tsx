@@ -27,6 +27,9 @@ export default function LoginForm() {
         // Parse the user's role from the API response payload dynamically
         const user = data.data?.user || data.user || data.data;
         const role = user?.role || "user";
+        
+        // Save the uppercase role to localStorage so the sidebar can read it dynamically
+        localStorage.setItem("userRole", role.toUpperCase());
 
         setTimeout(() => {
           // Redirect dynamically based on the user's account role
