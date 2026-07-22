@@ -66,3 +66,90 @@ export const loginUser = async (email: string, password: string) => {
   }
 };
 
+/**
+ * 4. Service to refresh access token using refresh token
+ */
+export const refreshAccessToken = async (refreshToken: string) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/refresh-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    return await res.json();
+  } catch (error) {
+    console.error("refreshAccessToken service error:", error);
+    throw new Error("Failed to refresh access token.");
+  }
+};
+
+/**
+ * Helper function to handle the access token refresh API request
+ */
+const handleTokenRefresh = async (refreshToken: string): Promise<boolean> => {
+  try {
+    const data = await refreshAccessToken(refreshToken);
+    if (!data.success) return false;
+
+    const newAccessToken = data.data?.accessToken || data.accessToken;
+    if (!newAccessToken) return false;
+
+    localStorage.setItem("accessToken", newAccessToken);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+/**
+ * Helper to clear local session data and redirect to login page
+ */
+const handleLogout = () => {
+  localStorage.clear();
+  if (typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
+};
+
+/**
+ * 5. Custom wrapper around native fetch that handles JWT Authorization
+ * and automatically attempts to refresh expired access tokens on 401.
+ */
+export const fetchWithAuth = async (url: string, options: any = {}) => {
+  const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+
+  options.headers = {
+    ...options.headers,
+    "Authorization": accessToken ? `Bearer ${accessToken}` : "",
+    "Content-Type": "application/json",
+  };
+
+  let res = await fetch(url, options);
+
+  // Guard Clause: If the request is successful or fails with something other than 401, return it
+  if (res.status !== 401) {
+    return res;
+  }
+
+  // Handle Token Refresh on 401 Unauthorized
+  const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null;
+  if (!refreshToken) {
+    handleLogout();
+    return res;
+  }
+
+  const isRefreshed = await handleTokenRefresh(refreshToken);
+  if (!isRefreshed) {
+    handleLogout();
+    return res;
+  }
+
+  // Retry the original request with the fresh token
+  const newAccessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+  options.headers["Authorization"] = newAccessToken ? `Bearer ${newAccessToken}` : "";
+  return fetch(url, options);
+};
+

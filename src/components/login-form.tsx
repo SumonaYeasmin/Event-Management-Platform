@@ -29,7 +29,12 @@ export default function LoginForm() {
         const user = data.data?.user || data.user || data.data;
         const role = user?.role || "user";
         
-        // Save the uppercase role to localStorage so the sidebar can read it dynamically
+        // Save tokens and the user role to localStorage
+        const accessToken = data.data?.accessToken || data.accessToken;
+        const refreshToken = data.data?.refreshToken || data.refreshToken;
+        
+        if (accessToken) localStorage.setItem("accessToken", accessToken);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userRole", role.toUpperCase());
 
         setTimeout(() => {
