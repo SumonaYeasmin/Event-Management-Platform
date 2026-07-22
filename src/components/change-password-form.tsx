@@ -36,7 +36,7 @@ export default function ChangePasswordForm() {
 
       if (data.success) {
         toast.success(data.message || "Password changed successfully!");
-        
+
         // Clear all password fields upon successful change
         setOldPassword("");
         setNewPassword("");
