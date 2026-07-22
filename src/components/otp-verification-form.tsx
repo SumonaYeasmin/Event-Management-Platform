@@ -38,6 +38,9 @@ function OtpVerificationFormContent() {
 
   // Run timer countdown on mount
   useEffect(() => {
+    // Stop the timer if the account is already successfully verified
+    if (successMessage) return;
+
     if (countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
@@ -46,7 +49,7 @@ function OtpVerificationFormContent() {
     } else {
       setCanResend(true);
     }
-  }, [countdown]);
+  }, [countdown, successMessage]);
 
   // Triggered when the user types a digit in one of the input fields
   const handleChange = (value: string, index: number) => {
