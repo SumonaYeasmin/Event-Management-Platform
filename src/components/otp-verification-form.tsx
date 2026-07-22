@@ -57,7 +57,7 @@ function OtpVerificationFormContent() {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto-focus next input box if a value is typed and this is not the last box
+    // Auto-focus next input box if a value is typed and this is not the last box (index < 5)
     if (value && index < 5) {
       const nextInput = inputRefs.current[index + 1];
       if (nextInput) {
@@ -86,6 +86,31 @@ function OtpVerificationFormContent() {
         newOtp[index] = "";
         setOtp(newOtp);
       }
+    }
+  };
+
+  // NEW: Triggered when user pastes a code into the first input box
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault(); // Stop native pasting
+    const pastedData = e.clipboardData.getData("text").trim();
+    
+    // Only allow number-based pastes
+    if (!/^[0-9]+$/.test(pastedData)) return;
+
+    // Slice the first 6 characters and split into digits
+    const digits = pastedData.slice(0, 6).split("");
+    const newOtp = [...otp];
+    
+    for (let i = 0; i < 6; i++) {
+      newOtp[i] = digits[i] || "";
+    }
+    setOtp(newOtp);
+
+    // Focus the last populated input box
+    const focusIndex = Math.min(digits.length - 1, 5);
+    const targetInput = inputRefs.current[focusIndex];
+    if (targetInput) {
+      targetInput.focus();
     }
   };
 
@@ -125,6 +150,7 @@ function OtpVerificationFormContent() {
     setSuccessMessage("");
 
     const fullCode = otp.join("");
+    // Validate 6-digit code length
     if (fullCode.length < 6) {
       setErrorMessage("Please enter all 6 digits of the verification code.");
       return;
@@ -138,7 +164,7 @@ function OtpVerificationFormContent() {
     setIsVerifying(true);
 
     try {
-      // Calling our separated service
+      // Calling our separated service with 6-digit code
       const data = await verifyOtp(email, fullCode);
 
       if (data.success) {
@@ -221,6 +247,8 @@ function OtpVerificationFormContent() {
                 }}
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
+                // Trigger handlePaste ONLY on the first input box
+                onPaste={index === 0 ? handlePaste : undefined}
                 placeholder="•"
                 className={`w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 text-center text-lg md:text-xl font-bold bg-white text-slate-900 border rounded-xl shadow-xs transition-all duration-150 outline-none placeholder-slate-300
                   ${
