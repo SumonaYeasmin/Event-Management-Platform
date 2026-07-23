@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import toast from "react-hot-toast"; // toast ইম্পোর্ট করা হলো
+import { logoutUser } from "@/src/services/auth"; // logoutUser ইম্পোর্ট করা হলো
 import { 
   LayoutDashboard, CalendarHeart, UserCog, CalendarCheck,
   CalendarPlus, BarChart3, Users, ShieldAlert, 
@@ -195,7 +197,13 @@ export function DashboardSidebar({ currentRole }: DashboardSidebarProps) {
                 <span className="text-[10px] text-slate-400 truncate mt-0.5">hello@novaevents.com</span>
               </div>
             </div>
-            <button className="text-slate-400 hover:text-white p-1.5 rounded-md hover:bg-slate-800/50 group-data-[collapsible=icon]:hidden shrink-0 transition-colors cursor-pointer">
+            <button 
+              onClick={() => {
+                toast.success("Logged out successfully!");
+                logoutUser();
+              }}
+              className="text-slate-400 hover:text-white p-1.5 rounded-md hover:bg-slate-800/50 group-data-[collapsible=icon]:hidden shrink-0 transition-colors cursor-pointer"
+            >
               <LogOut className="h-4 w-4" />
             </button>
           </div>

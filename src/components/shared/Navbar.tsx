@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { logoutUser } from "@/src/services/auth"; // logoutUser ইম্পোর্ট করা হলো
 
 export default function Navbar() {
   const router = useRouter();
@@ -149,11 +150,8 @@ export default function Navbar() {
               <button 
                 onClick={() => {
                   setIsDropdownOpen(false);
-                  localStorage.removeItem("accessToken");
-                  localStorage.removeItem("refreshToken");
-                  localStorage.removeItem("userRole");
                   toast.success("Logged out successfully!");
-                  router.push("/login");
+                  logoutUser(); // রিইউজেবল লগআউট ফাংশন কল করা হলো
                 }}
                 className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50/50 transition font-semibold text-left cursor-pointer"
               >

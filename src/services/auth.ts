@@ -105,11 +105,13 @@ const handleTokenRefresh = async (refreshToken: string): Promise<boolean> => {
 };
 
 /**
- * Helper to clear local session data and redirect to login page
+ * Helper to clear local session data, cookies, and redirect to login page
  */
-const handleLogout = () => {
+export const logoutUser = () => {
   localStorage.clear();
   if (typeof window !== "undefined") {
+    // Clear the accessToken cookie
+    document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
     window.location.href = "/login";
   }
 };
@@ -137,13 +139,13 @@ export const fetchWithAuth = async (url: string, options: any = {}) => {
   // Handle Token Refresh on 401 Unauthorized
   const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null;
   if (!refreshToken) {
-    handleLogout();
+    logoutUser();
     return res;
   }
 
   const isRefreshed = await handleTokenRefresh(refreshToken);
   if (!isRefreshed) {
-    handleLogout();
+    logoutUser();
     return res;
   }
 

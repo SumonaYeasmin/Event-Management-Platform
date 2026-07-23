@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import toast from 'react-hot-toast' // toast ইম্পোর্ট করা হলো
+import { logoutUser } from '@/src/services/auth' // logoutUser ইম্পোর্ট করা হলো
 import { 
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger 
 } from '@/src/components/ui/sheet'
@@ -139,7 +141,14 @@ export default function DashboardMobileSidebar({ currentRole }: DashboardMobileS
               <ExternalLink className="h-4 w-4 text-slate-500" />
               View public site
             </Link>
-            <button className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold rounded-xl text-rose-400 hover:bg-rose-950/20 hover:text-rose-300 w-full text-left transition-colors cursor-pointer">
+            <button 
+              onClick={() => {
+                setOpen(false);
+                toast.success("Logged out successfully!");
+                logoutUser();
+              }}
+              className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold rounded-xl text-rose-400 hover:bg-rose-950/20 hover:text-rose-300 w-full text-left transition-colors cursor-pointer"
+            >
               <LogOut className="h-4 w-4 text-rose-500/80" />
               Log out
             </button>
