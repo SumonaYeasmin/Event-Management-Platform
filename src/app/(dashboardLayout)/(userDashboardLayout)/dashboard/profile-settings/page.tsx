@@ -1,8 +1,52 @@
 import React from "react";
-import EditProfileForm from "@/src/components/edit-profile-form";
+import { cookies } from "next/headers";
+import MyProfile from "@/src/components/modules/MyProfile/MyProfile";
 import ChangePasswordForm from "@/src/components/change-password-form";
 
-export default function ProfileSettingsPage() {
+// টোকেন ডিকোড করার হেল্পার
+function decodeToken(token: string) {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      Buffer.from(base64, "base64")
+        .toString()
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    return null;
+  }
+}
+
+export default async function ProfileSettingsPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  if (!token) {
+    return (
+      <div className="p-6 text-center text-red-500 font-semibold bg-red-50 rounded-xl border border-red-100 max-w-xl mx-auto my-12">
+        ইউজার লগইন করা নেই। দয়া করে লগইন করুন।
+      </div>
+    );
+  }
+
+  const identity = decodeToken(token);
+  if (!identity) {
+    return (
+      <div className="p-6 text-center text-red-500 font-semibold bg-red-50 rounded-xl border border-red-100 max-w-xl mx-auto my-12">
+        টোকেন সঠিক নয়। দয়া করে আবার লগইন করুন।
+      </div>
+    );
+  }
+
+  const fullUserInfo = {
+    email: identity.email || "",
+    role: identity.role || "USER",
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Page Header */}
@@ -17,13 +61,13 @@ export default function ProfileSettingsPage() {
 
       {/* Grid Layout for Forms */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Edit Profile Details (7 cols) */}
-        <div className="lg:col-span-7">
-          <EditProfileForm />
+        {/* Left Column: Edit Profile Details (8 cols for extra space) */}
+        <div className="lg:col-span-8">
+          <MyProfile userInfo={fullUserInfo} />
         </div>
 
-        {/* Right Column: Change Password (5 cols) */}
-        <div className="lg:col-span-5">
+        {/* Right Column: Change Password (4 cols) */}
+        <div className="lg:col-span-4">
           <ChangePasswordForm />
         </div>
       </div>
