@@ -4,12 +4,14 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { changePassword } from "@/src/services/auth";
 import { Eye, EyeOff, KeyRound } from "lucide-react";
+import { changePasswordSchema } from "@/src/schemas/auth.schema"; // Zod স্কিমা ইম্পোর্ট করা হলো
 
 export default function ChangePasswordForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({}); // এরর স্টেট ডিক্লেয়ার করা হলো
 
   // Form input states to manually clear them after success
   const [oldPassword, setOldPassword] = useState<string>("");
@@ -18,18 +20,26 @@ export default function ChangePasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters long.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      toast.error("New passwords do not match.");
-      return;
-    }
-
     setIsLoading(true);
+    setErrors({}); // আগের সব এরর ক্লিয়ার করা হলো
+
+    // Zod ভ্যালিডেশন রান করা হচ্ছে
+    const validation = changePasswordSchema.safeParse({
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    });
+
+    if (!validation.success) {
+      const newErrors: Record<string, string> = {};
+      validation.error.issues.forEach((issue) => {
+        const field = issue.path[0] as string;
+        newErrors[field] = issue.message;
+      });
+      setErrors(newErrors); // নতুন এরর সেট করা হলো
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const data = await changePassword(oldPassword, newPassword);
@@ -65,7 +75,7 @@ export default function ChangePasswordForm() {
         </div>
       </div>
 
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit} noValidate>
         {/* Current Password Field */}
         <div>
           <label htmlFor="oldPassword" className="block text-sm lg:text-base font-semibold text-slate-700 mb-2">
@@ -76,7 +86,6 @@ export default function ChangePasswordForm() {
               id="oldPassword"
               name="oldPassword"
               type={showOldPassword ? "text" : "password"}
-              required
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
               placeholder="••••••••"
@@ -91,6 +100,9 @@ export default function ChangePasswordForm() {
               {showOldPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
+          {errors.oldPassword && (
+            <p className="text-red-500 text-sm mt-1 font-medium">{errors.oldPassword}</p>
+          )}
         </div>
 
         {/* New Password Field */}
@@ -103,7 +115,6 @@ export default function ChangePasswordForm() {
               id="newPassword"
               name="newPassword"
               type={showNewPassword ? "text" : "password"}
-              required
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="••••••••"
@@ -118,6 +129,9 @@ export default function ChangePasswordForm() {
               {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
+          {errors.newPassword && (
+            <p className="text-red-500 text-sm mt-1 font-medium">{errors.newPassword}</p>
+          )}
         </div>
 
         {/* Confirm New Password Field */}
@@ -130,7 +144,6 @@ export default function ChangePasswordForm() {
               id="confirmPassword"
               name="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
-              required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
@@ -145,6 +158,9 @@ export default function ChangePasswordForm() {
               {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm mt-1 font-medium">{errors.confirmPassword}</p>
+          )}
         </div>
 
         <div className="flex justify-end pt-2">

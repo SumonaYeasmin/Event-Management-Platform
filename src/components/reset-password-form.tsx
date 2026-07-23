@@ -6,6 +6,7 @@ import React, { useState, Suspense } from "react";
 import toast from "react-hot-toast";
 import { resetPassword } from "@/src/services/auth";
 import { ShieldAlert, Eye, EyeOff } from "lucide-react";
+import { resetPasswordSchema } from "@/src/schemas/auth.schema"; // Zod স্কিমা ইম্পোর্ট করা হলো
 
 function ResetPasswordFormContent() {
   const router = useRouter();
@@ -15,6 +16,7 @@ function ResetPasswordFormContent() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({}); // এরর স্টেট ডিক্লেয়ার করা হলো
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,21 +26,26 @@ function ResetPasswordFormContent() {
       return;
     }
 
+    setIsLoading(true);
+    setErrors({}); // আগের এররগুলো রিসেট করা হলো
+
     const formData = new FormData(e.currentTarget);
     const newPassword = formData.get("newPassword") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+    // Zod ভ্যালিডেশন চেক করা হচ্ছে
+    const validation = resetPasswordSchema.safeParse({ newPassword, confirmPassword });
+
+    if (!validation.success) {
+      const newErrors: Record<string, string> = {};
+      validation.error.issues.forEach((issue) => {
+        const field = issue.path[0] as string;
+        newErrors[field] = issue.message;
+      });
+      setErrors(newErrors); // নতুন এরর সেট করা হলো
+      setIsLoading(false);
       return;
     }
-
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
-    setIsLoading(true);
 
     try {
       const data = await resetPassword(resetToken, newPassword);
@@ -91,7 +98,7 @@ function ResetPasswordFormContent() {
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <div>
           <label htmlFor="newPassword" className="block text-xs md:text-sm font-semibold text-slate-700 mb-1.5">
             New Password
@@ -101,10 +108,9 @@ function ResetPasswordFormContent() {
               id="newPassword"
               name="newPassword"
               type={showPassword ? "text" : "password"}
-              required
               placeholder="••••••••"
               disabled={isLoading}
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm pr-10"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm pr-10 disabled:opacity-60 disabled:cursor-not-allowed"
             />
             <button
               type="button"
@@ -114,6 +120,9 @@ function ResetPasswordFormContent() {
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
+          {errors.newPassword && (
+            <p className="text-red-500 text-sm mt-1 font-medium">{errors.newPassword}</p>
+          )}
         </div>
 
         <div>
@@ -125,10 +134,9 @@ function ResetPasswordFormContent() {
               id="confirmPassword"
               name="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
-              required
               placeholder="••••••••"
               disabled={isLoading}
-              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm pr-10"
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm pr-10 disabled:opacity-60 disabled:cursor-not-allowed"
             />
             <button
               type="button"
@@ -138,6 +146,9 @@ function ResetPasswordFormContent() {
               {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm mt-1 font-medium">{errors.confirmPassword}</p>
+          )}
         </div>
 
         <button

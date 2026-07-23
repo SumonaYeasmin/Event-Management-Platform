@@ -2,7 +2,7 @@ import React from "react";
 import { cookies } from "next/headers";
 import MyProfile from "@/src/components/modules/MyProfile/MyProfile";
 import ChangePasswordForm from "@/src/components/change-password-form";
-import { decodeToken } from "@/src/lib/jwt"; // রিইউজেবল হেল্পার ইম্পোর্ট করা হলো
+import { decodeToken } from "@/src/lib/jwt"; // Import reusable helper
 
 export default async function ProfileSettingsPage() {
   const cookieStore = await cookies();
@@ -10,18 +10,18 @@ export default async function ProfileSettingsPage() {
 
   if (!token) {
     return (
-      <div className="p-6 text-center text-red-500 font-semibold bg-red-50 rounded-xl border border-red-100 max-w-xl mx-auto my-12">
-        ইউজার লগইন করা নেই। দয়া করে লগইন করুন।
+      <div className="p-6 text-center text-red-500 font-semibold bg-red-50/50 rounded-xl border border-red-100 max-w-xl mx-auto my-12">
+        Unauthorized access. Please log in to your account.
       </div>
     );
   }
 
-  const identity = decodeToken(token); // হেল্পার দিয়ে ডিকোড করা হলো
+  const identity = decodeToken(token); // Decode token using helper
 
   if (!identity) {
     return (
-      <div className="p-6 text-center text-red-500 font-semibold bg-red-50 rounded-xl border border-red-100 max-w-xl mx-auto my-12">
-        টোকেন সঠিক নয়। দয়া করে আবার লগইন করুন।
+      <div className="p-6 text-center text-red-500 font-semibold bg-red-50/50 rounded-xl border border-red-100 max-w-xl mx-auto my-12">
+        Invalid or expired session. Please log in again.
       </div>
     );
   }

@@ -5,7 +5,7 @@ export interface DecodedUser {
   role: string;
 }
 
-// টোকেন ডিকোড করার রিইউজেবল হেল্পার ফাংশন
+// Reusable token decoding helper function
 export function decodeToken(token: string): DecodedUser | null {
   try {
     return jwtDecode<DecodedUser>(token);
