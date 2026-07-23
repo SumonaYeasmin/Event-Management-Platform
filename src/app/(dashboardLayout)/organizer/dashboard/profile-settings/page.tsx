@@ -2,24 +2,7 @@ import React from "react";
 import { cookies } from "next/headers";
 import MyProfile from "@/src/components/modules/MyProfile/MyProfile";
 import ChangePasswordForm from "@/src/components/change-password-form";
-
-// টোকেন ডিকোড করার হেল্পার
-function decodeToken(token: string) {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      Buffer.from(base64, "base64")
-        .toString()
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    return null;
-  }
-}
+import { decodeToken } from "@/src/lib/jwt"; // রিইউজেবল হেল্পার ইম্পোর্ট করা হলো
 
 export default async function OrganizerProfileSettingsPage() {
   const cookieStore = await cookies();
@@ -33,7 +16,8 @@ export default async function OrganizerProfileSettingsPage() {
     );
   }
 
-  const identity = decodeToken(token);
+  const identity = decodeToken(token); // হেল্পার দিয়ে ডিকোড করা হলো
+
   if (!identity) {
     return (
       <div className="p-6 text-center text-red-500 font-semibold bg-red-50 rounded-xl border border-red-100 max-w-xl mx-auto my-12">

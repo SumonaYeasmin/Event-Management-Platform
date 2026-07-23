@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/src/components/ui/avatar"; // অ্�
 import { Card, CardContent } from "@/src/components/ui/card"; // কার্ড লেআউটের জন্য
 import { getInitials } from "@/src/lib/formatters"; // ইমেইল থেকে ইনিশিয়াল লেটার বের করার হেল্পার
 import { Mail, Shield, User } from "lucide-react"; // আইকনসমূহ
-import React from "react";
+
 
 interface MyProfileProps {
   userInfo: {
