@@ -2,12 +2,26 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 export default function Navbar() {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dashboardHref, setDashboardHref] = useState("/dashboard/overview");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const role = localStorage.getItem("userRole")?.toLowerCase();
+      if (role === "admin") {
+        setDashboardHref("/admin/dashboard");
+      } else if (role === "organizer") {
+        setDashboardHref("/organizer/dashboard");
+      } else {
+        setDashboardHref("/dashboard/overview");
+      }
+    }
+  }, [isDropdownOpen]); // Re-evaluate when dropdown is opened to catch state changes
 
   return (
     <nav className="bg-white border-b border-slate-100  sticky top-0 z-50! ">
@@ -104,7 +118,7 @@ export default function Navbar() {
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 origin-top-right">
               {/* Dashboard Link */}
               <Link 
-                href="/dashboard/overview" 
+                href={dashboardHref} 
                 onClick={() => setIsDropdownOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition font-medium"
               >

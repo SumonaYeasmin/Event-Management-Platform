@@ -37,11 +37,13 @@ export default function LoginForm() {
         if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userRole", role.toUpperCase());
 
+        const normalizedRole = role.toLowerCase();
+
         setTimeout(() => {
           // Redirect dynamically based on the user's account role
-          if (role === "admin") {
+          if (normalizedRole === "admin") {
             router.push("/admin/dashboard");
-          } else if (role === "organizer") {
+          } else if (normalizedRole === "organizer") {
             router.push("/organizer/dashboard");
           } else {
             router.push("/dashboard/overview");

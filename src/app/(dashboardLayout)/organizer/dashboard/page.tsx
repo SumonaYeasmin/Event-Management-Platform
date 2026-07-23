@@ -153,7 +153,7 @@ export default function OrganizerOverviewPage() {
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="h-28 w-48 rounded-lg object-cover bg-slate-100 shrink-0 "
+                    className="h-28 w-48 lg:h-40 lg:w-60 rounded-lg object-cover bg-slate-100 shrink-0 "
                   />
                   <div className="space-y-1">
                     <h4 className="text-sm md:text-base font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors leading-tight">

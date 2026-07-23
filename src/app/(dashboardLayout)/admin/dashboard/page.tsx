@@ -15,46 +15,46 @@ export default function PlatformOverviewPage() {
       {/* Stats Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Card 1: Total Users */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
+        <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-sm font-medium text-slate-500">Total users</span>
-            <h3 className="text-3xl font-bold text-slate-900">3</h3>
+            <h3 className="text-xl lg:text-3xl font-bold text-slate-900">3</h3>
           </div>
-          <div className="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <Users className="h-6 w-6" />
+          <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <Users className="h-5 w-5 md:h-6 md:w-6" />
           </div>
         </div>
 
         {/* Card 2: Organizers */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
+        <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-sm font-medium text-slate-500">Organizers</span>
-            <h3 className="text-3xl font-bold text-slate-900">3</h3>
+            <h3 className="text-xl lg:text-3xl font-bold text-slate-900">3</h3>
           </div>
-          <div className="h-12 w-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
-            <Building2 className="h-6 w-6" />
+          <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center">
+            <Building2 className="h-5 w-5 md:h-6 md:w-6" />
           </div>
         </div>
 
         {/* Card 3: Total Events */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
+        <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-sm font-medium text-slate-500">Total events</span>
-            <h3 className="text-3xl font-bold text-slate-900">12</h3>
+            <h3 className="text-xl lg:text-3xl font-bold text-slate-900">12</h3>
           </div>
-          <div className="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <Calendar className="h-6 w-6" />
+          <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <Calendar className="h-5 w-5 md:h-6 md:w-6" />
           </div>
         </div>
 
         {/* Card 4: Registrations */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
+        <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-sm font-medium text-slate-500">Registrations</span>
-            <h3 className="text-3xl font-bold text-slate-900">7</h3>
+            <h3 className="text-xl lg:text-3xl font-bold text-slate-900">7</h3>
           </div>
-          <div className="h-12 w-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-            <Ticket className="h-6 w-6" />
+          <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <Ticket className="h-5 w-5 md:h-6 md:w-6" />
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function PlatformOverviewPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900">Pending approvals</h2>
-            <p className="text-xs text-slate-400 mt-0.5">1 event awaiting review</p>
+            <p className="text-xs lg:text-sm text-slate-400 mt-0.5">1 event awaiting review</p>
           </div>
           <Link href="/admin/dashboard/pending-approvals" className="text-xs font-semibold text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors">
             Review all <ArrowRight className="h-3 w-3" />
@@ -79,13 +79,13 @@ export default function PlatformOverviewPage() {
               <img
                 src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=150"
                 alt="Event cover"
-                className="h-12 w-20 rounded-lg object-cover bg-slate-100 shrink-0"
+                className="h-12 md:h-16 lg:h-28 w-20 md:w-24 lg:w-36 rounded-lg object-cover bg-slate-100 shrink-0"
               />
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors leading-tight">
+                <h4 className="text-sm lg:text-lg font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors leading-tight">
                   Regional Startup Pitch Night
                 </h4>
-                <p className="text-xs text-slate-500 font-medium">
+                <p className="text-xs lg:text-sm text-slate-500 font-medium">
                   Nova Events Co. · Business · Sep 12, 2026
                 </p>
               </div>

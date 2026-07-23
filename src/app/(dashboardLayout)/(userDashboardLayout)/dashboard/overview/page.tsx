@@ -68,20 +68,20 @@ export default function OverviewPage() {
               <img
                 src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=150"
                 alt="Event cover"
-                className="h-12 w-20 rounded-lg object-cover bg-slate-100 shrink-0"
+                className="h-12 w-20 lg:h-32 lg:w-40 rounded-lg object-cover bg-slate-100 shrink-0"
               />
               <div className="space-y-1 min-w-0">
                 <h4 className="text-xs md:text-sm font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors line-clamp-2">
                   Founders & Funders Networking Summit
                 </h4>
-                <div className="flex items-center gap-1.5 text-[11px] md:text-xs text-slate-500">
+                <div className="flex items-center gap-1.5 text-xs md:text-base text-slate-500">
                   <Clock className="h-3.5 w-3.5 shrink-0" />
                   <span>Jul 30, 2026</span>
                 </div>
               </div>
             </div>
             <div className="self-start sm:self-auto ml-[92px] sm:ml-0">
-              <span className="text-[10px] md:text-[11px] font-semibold bg-sky-50 text-sky-600 border border-sky-100 px-3 py-1 rounded-full">
+              <span className="text-xs md:text-base font-semibold bg-sky-50 text-sky-600 border border-sky-100 px-3 py-1 rounded-full">
                 Business
               </span>
             </div>
@@ -93,20 +93,20 @@ export default function OverviewPage() {
               <img
                 src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=150"
                 alt="Event cover"
-                className="h-12 w-20 rounded-lg object-cover bg-slate-100 shrink-0"
+                className="h-12 w-20 lg:h-32 lg:w-40 rounded-lg object-cover bg-slate-100 shrink-0"
               />
               <div className="space-y-1 min-w-0">
                 <h4 className="text-xs md:text-sm font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors line-clamp-2">
                   AI Product Bootcamp (Online)
                 </h4>
-                <div className="flex items-center gap-1.5 text-[11px] md:text-xs text-slate-500">
+                <div className="flex items-center gap-1.5 text-xs md:text-base text-slate-500">
                   <Clock className="h-3.5 w-3.5 shrink-0" />
                   <span>Aug 15, 2026</span>
                 </div>
               </div>
             </div>
             <div className="self-start sm:self-auto ml-[92px] sm:ml-0">
-              <span className="text-[10px] md:text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full">
+              <span className="text-xs md:text-base font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full">
                 Education
               </span>
             </div>
@@ -118,20 +118,20 @@ export default function OverviewPage() {
               <img
                 src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&q=80&w=150"
                 alt="Event cover"
-                className="h-12 w-20 rounded-lg object-cover bg-slate-100 shrink-0"
+                className="h-12 w-20 lg:h-32 lg:w-40 rounded-lg object-cover bg-slate-100 shrink-0"
               />
               <div className="space-y-1 min-w-0">
-                <h4 className="text-xs md:text-sm font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors line-clamp-2">
+                <h4 className="text-xs md:text-sm lg:text-lg font-bold text-slate-900 hover:text-indigo-600 cursor-pointer transition-colors line-clamp-2">
                   Innovate 2026 — The Future of Technology
                 </h4>
-                <div className="flex items-center gap-1.5 text-[11px] md:text-xs text-slate-500">
+                <div className="flex items-center gap-1.5 text-sm lg:text-base text-slate-500">
                   <Clock className="h-3.5 w-3.5 shrink-0" />
                   <span>Aug 22, 2026</span>
                 </div>
               </div>
             </div>
             <div className="self-start sm:self-auto ml-[92px] sm:ml-0">
-              <span className="text-[10px] md:text-[11px] font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 px-3 py-1 rounded-full">
+              <span className="text-xs md:text-base font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 px-3 py-1 rounded-full">
                 Technology
               </span>
             </div>
