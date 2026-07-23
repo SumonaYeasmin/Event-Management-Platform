@@ -210,3 +210,41 @@ export const changePassword = async (oldPassword: string, newPassword: string) =
   }
 };
 
+/**
+ * 9. Get current user profile details
+ */
+export const getMyProfile = async (token: string) => {
+  try {
+    const res = await fetch("http://localhost:5000/api/v1/user/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return await res.json();
+  } catch (error) {
+    console.error("getMyProfile service error:", error);
+    throw new Error("Failed to fetch profile data.");
+  }
+};
+
+/**
+ * 10. Update user profile details (Multipart/FormData for image support)
+ */
+export const updateMyProfile = async (formData: FormData) => {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    const res = await fetch("http://localhost:5000/api/v1/user/update-profile", {
+      method: "PATCH",
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+      body: formData,
+    });
+    return await res.json();
+  } catch (error) {
+    console.error("updateMyProfile service error:", error);
+    throw new Error("Failed to update profile data.");
+  }
+};
+

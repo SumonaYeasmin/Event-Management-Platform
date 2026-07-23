@@ -24,16 +24,20 @@ export default function LoginForm() {
 
       if (data.success) {
         toast.success(data.message || "Login successful!");
-        
+
         // Parse the user's role from the API response payload dynamically
         const user = data.data?.user || data.user || data.data;
         const role = user?.role || "user";
-        
+
         // Save tokens and the user role to localStorage
         const accessToken = data.data?.accessToken || data.accessToken;
         const refreshToken = data.data?.refreshToken || data.refreshToken;
-        
-        if (accessToken) localStorage.setItem("accessToken", accessToken);
+
+        if (accessToken) {
+          localStorage.setItem("accessToken", accessToken);
+          // সার্ভার সাইড থেকে টোকেন অ্যাক্সেস করার জন্য কুকিতেও সেভ করা হচ্ছে
+          document.cookie = `accessToken=${accessToken}; path=/; max-age=604800; SameSite=Lax`;
+        }
         if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
         localStorage.setItem("userRole", role.toUpperCase());
 
