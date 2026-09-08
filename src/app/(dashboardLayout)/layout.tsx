@@ -16,15 +16,23 @@ export default function DashboardLayout({
 }) {
     const pathname = usePathname();
 
-    // Dynamically retrieve the typed user role from localStorage
+    // Dynamically retrieve the typed user role from pathname or localStorage
     const [currentRole, setCurrentRole] = useState<DashboardRole>("USER");
 
     useEffect(() => {
-        const savedRole = localStorage.getItem("userRole") as DashboardRole;
-        if (savedRole && (savedRole === "USER" || savedRole === "ORGANIZER" || savedRole === "ADMIN")) {
-            setCurrentRole(savedRole);
+        if (pathname?.startsWith("/admin")) {
+            setCurrentRole("ADMIN");
+        } else if (pathname?.startsWith("/organizer")) {
+            setCurrentRole("ORGANIZER");
+        } else {
+            const savedRole = localStorage.getItem("userRole") as DashboardRole;
+            if (savedRole && (savedRole === "USER" || savedRole === "ORGANIZER" || savedRole === "ADMIN")) {
+                setCurrentRole(savedRole);
+            } else {
+                setCurrentRole("USER");
+            }
         }
-    }, []);
+    }, [pathname]);
 
     const getHeaderTitle = (path: string) => {
         if (path.endsWith("/dashboard/overview")) return "Overview";

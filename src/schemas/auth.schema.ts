@@ -3,8 +3,8 @@ import { z } from "zod";
 // ১. রেজিস্টার ফর্মের জন্য ভ্যালিডেশন স্কিমা
 export const registerSchema = z
   .object({
-    // fullname অবশ্যই স্ট্রিং হতে হবে এবং কমপক্ষে ২ অক্ষরের হতে হবে
-    fullname: z
+    // name অবশ্যই স্ট্রিং হতে হবে এবং কমপক্ষে ২ অক্ষরের হতে হবে
+    name: z
       .string()
       .min(2, "Full name must be at least 2 characters long."),
     

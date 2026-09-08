@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast"; // নোটিফিকেশন টোস্ট ইম্পোর্ট করা হলো
+import { loginUser, registerUser } from "@/src/services/auth";
 import { registerSchema } from "@/src/schemas/auth.schema"; // জড স্কিমা ইম্পোর্ট করা হলো
 
 export default function RegisterForm() {
@@ -11,21 +12,39 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false); // লোডিং বাটন কন্ট্রোলের জন্য স্টেট
   const [errors, setErrors] = useState<Record<string, string>>({}); // প্রতিটি ফিল্ডের আলাদা এরর রাখার স্টেট
 
+  // ফর্ম ইনপুটের জন্য স্টেট (ইনপুট ক্লিয়ার করার সুবিধার্থে)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setErrors({}); // সাবমিট করার শুরুতেই আগের সব এরর মুছে ফেলা হচ্ছে
 
-    // ১. ফর্ম থেকে ইনপুট ডাটা নেওয়া হলো
-    const formData = new FormData(e.currentTarget);
-    const fullname = formData.get("fullname") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const confirmPassword = formData.get("confirmPassword") as string;
+    const { name, email, password, confirmPassword } = formData;
 
     // ২. Zod স্কিমা দিয়ে ডাটা ভ্যালিডেশন চেক করা হচ্ছে
     const validation = registerSchema.safeParse({
-      fullname,
+      name,
       email,
       password,
       confirmPassword,
@@ -37,7 +56,7 @@ export default function RegisterForm() {
       
       // Zod এর সব এরর লুপ করে আমাদের errors অবজেক্টে ফিল্ড অনুযায়ী গুছিয়ে রাখছি
       validation.error.issues.forEach((issue) => {
-        const field = issue.path[0] as string; // যেমন: "fullname", "email" ইত্যাদি
+        const field = issue.path[0] as string; // যেমন: "name", "email" ইত্যাদি
         newErrors[field] = issue.message; // Zod এর কাস্টম এরর মেসেজ
       });
 
@@ -48,34 +67,77 @@ export default function RegisterForm() {
 
     try {
       // ৪. ভ্যালিডেশন সফল হলে ব্যাকএন্ড সার্ভারে পোস্ট রিকোয়েস্ট পাঠানো হচ্ছে
-      const res = await fetch("http://localhost:5000/api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          confirmPassword,
-        }),
+      const data = await registerUser({
+        name,
+        email,
+        password,
+        confirmPassword,
       });
 
-      const data = await res.json();
-      
       if (data.success) {
-        toast.success(data.message || "Registration successful! Please verify your email.");
-        router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
+        // ফর্ম ইনপুট ক্লিয়ার করা হচ্ছে
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+
+        // রেসপন্স থেকে টোকেন ও ইউজার ডাটা নেওয়া হচ্ছে
+        let accessToken = data.data?.accessToken || data.accessToken;
+        let refreshToken = data.data?.refreshToken || data.refreshToken;
+        let user = data.data?.user || data.user || data.data;
+        let role = user?.role || "USER";
+
+        // যদি ব্যাকএন্ড টোকেন রিটার্ন না করে থাকে তবে সাথে সাথে অটো-লগইন করা
+        if (!accessToken) {
+          try {
+            const loginRes = await loginUser(email, password);
+            if (loginRes.success) {
+              accessToken = loginRes.data?.accessToken || loginRes.accessToken;
+              refreshToken = loginRes.data?.refreshToken || loginRes.refreshToken;
+              user = loginRes.data?.user || loginRes.user || loginRes.data;
+              role = user?.role || role;
+            }
+          } catch (autoLoginErr) {
+            console.error("Auto-login error after registration:", autoLoginErr);
+          }
+        }
+
+        // টোকেন এবং রোল লোকালস্টোরেজ ও কুকিতে সেভ করা
+        if (accessToken) {
+          localStorage.setItem("accessToken", accessToken);
+          document.cookie = `accessToken=${accessToken}; path=/; max-age=604800; SameSite=Lax`;
+        }
+        if (refreshToken) {
+          localStorage.setItem("refreshToken", refreshToken);
+        }
+        localStorage.setItem("userRole", role.toUpperCase());
+
+        toast.success(data.message || "Registration successful! Redirecting to dashboard...");
+
+        const normalizedRole = role.toLowerCase();
+
+        // রোল অনুযায়ী সরাসরি ড্যাশবোর্ডে রিডাইরেক্ট করা
+        setTimeout(() => {
+          if (normalizedRole === "admin") {
+            router.push("/admin/dashboard");
+          } else if (normalizedRole === "organizer") {
+            router.push("/organizer/dashboard");
+          } else {
+            router.push("/dashboard/overview");
+          }
+        }, 1200);
       } else {
         toast.error(data.message || "Registration failed!");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration error:", error);
-      toast.error("Failed to connect to the backend server.");
+      toast.error(error.message || "Failed to connect to the backend server.");
     } finally {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="w-full max-w-90 flex flex-col justify-center">
@@ -90,19 +152,21 @@ export default function RegisterForm() {
 
       <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <div>
-          <label htmlFor="fullname" className="block text-xs md:text-sm font-semibold text-slate-700 mb-1.5">
+          <label htmlFor="name" className="block text-xs md:text-sm font-semibold text-slate-700 mb-1.5">
             Full name
           </label>
           <input
-            id="fullname"
-            name="fullname"
+            id="name"
+            name="name"
             type="text"
+            value={formData.name}
+            onChange={handleChange}
             placeholder="Jane Doe"
             disabled={isLoading}
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm disabled:opacity-60 disabled:cursor-not-allowed"
           />
-          {errors.fullname && (
-            <p className="text-red-500 text-sm mt-1 font-medium">{errors.fullname}</p>
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1 font-medium">{errors.name}</p>
           )}
         </div>
 
@@ -114,6 +178,8 @@ export default function RegisterForm() {
             id="email"
             name="email"
             type="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="you@example.com"
             disabled={isLoading}
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm disabled:opacity-60 disabled:cursor-not-allowed"
@@ -131,6 +197,8 @@ export default function RegisterForm() {
             id="password"
             name="password"
             type="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="••••••••"
             disabled={isLoading}
             className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all text-xs md:text-sm disabled:opacity-60 disabled:cursor-not-allowed"
@@ -148,6 +216,8 @@ export default function RegisterForm() {
             id="confirmPassword"
             name="confirmPassword"
             type="password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
             required
             placeholder="••••••••"
             disabled={isLoading}

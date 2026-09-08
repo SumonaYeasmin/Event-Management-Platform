@@ -1,5 +1,31 @@
 // Base URL for backend authentication APIs
-const API_BASE_URL = "http://localhost:5000/api/v1/auth";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_BASE_API || "http://localhost:5000/api/v1"}/auth`;
+
+/**
+ * Service to register a new user
+ */
+export const registerUser = async (userData: {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  role?: string;
+}) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    return await res.json();
+  } catch (error) {
+    console.error("registerUser service error:", error);
+    throw new Error("Failed to connect to the authentication server.");
+  }
+};
 
 /**
  * 1. Service to verify OTP code (Matches your exact backend payload)
@@ -120,14 +146,38 @@ export const logoutUser = () => {
  * 5. Custom wrapper around native fetch that handles JWT Authorization
  * and automatically attempts to refresh expired access tokens on 401.
  */
-export const fetchWithAuth = async (url: string, options: any = {}) => {
-  const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+// export const fetchWithAuth = async (url: string, options: any = {}) => {
+//   const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
-  options.headers = {
-    ...options.headers,
-    "Authorization": accessToken ? `Bearer ${accessToken}` : "",
+//   options.headers = {
+//     ...options.headers,
+//     "Authorization": accessToken ? `Bearer ${accessToken}`,
+//     "Content-Type": "application/json",
+//   };
+
+export const fetchWithAuth = async (url: string, options: any = {}) => {
+  let accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+
+  // ১. টোকেন থেকে অতিরিক্ত কোটেশন ("), Newline (\n) ও স্পেস মুছে ফেলুন
+  if (accessToken) {
+    accessToken = accessToken.replace(/^"|"$/g, '').replace(/[\r\n]/g, '').trim();
+  }
+
+  // ২. হেডার অবজেক্ট তৈরি করুন
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    ...options.headers,
   };
+
+  // ৩. টোকেন থাকলেই শুধু Authorization হেডার পাঠাবেন (কখনই খালি স্ট্রিং "" পাঠাবেন না)
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  } else {
+    delete headers["Authorization"];
+  }
+
+  options.headers = headers;
+
 
   let res = await fetch(url, options);
 
