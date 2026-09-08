@@ -156,53 +156,57 @@ export const logoutUser = () => {
 //   };
 
 export const fetchWithAuth = async (url: string, options: any = {}) => {
-  let accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+  try {
+    let accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
-  // ১. টোকেন থেকে অতিরিক্ত কোটেশন ("), Newline (\n) ও স্পেস মুছে ফেলুন
-  if (accessToken) {
-    accessToken = accessToken.replace(/^"|"$/g, '').replace(/[\r\n]/g, '').trim();
+    // ১. টোকেন থেকে অতিরিক্ত কোটেশন ("), Newline (\n) ও স্পেস মুছে ফেলুন
+    if (accessToken) {
+      accessToken = accessToken.replace(/^"|"$/g, '').replace(/[\r\n]/g, '').trim();
+    }
+
+    // ২. হেডার অবজেক্ট তৈরি করুন
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...options.headers,
+    };
+
+    // ৩. টোকেন থাকলেই শুধু Authorization হেডার পাঠাবেন (কখনই খালি স্ট্রিং "" পাঠাবেন না)
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    } else {
+      delete headers["Authorization"];
+    }
+
+    options.headers = headers;
+
+    let res = await fetch(url, options);
+
+    // Guard Clause: If the request is successful or fails with something other than 401, return it
+    if (res.status !== 401) {
+      return res;
+    }
+
+    // Handle Token Refresh on 401 Unauthorized
+    const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null;
+    if (!refreshToken) {
+      logoutUser();
+      return res;
+    }
+
+    const isRefreshed = await handleTokenRefresh(refreshToken);
+    if (!isRefreshed) {
+      logoutUser();
+      return res;
+    }
+
+    // Retry the original request with the fresh token
+    const newAccessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    options.headers["Authorization"] = newAccessToken ? `Bearer ${newAccessToken}` : "";
+    return await fetch(url, options);
+  } catch (error) {
+    console.error("fetchWithAuth error:", error);
+    throw error;
   }
-
-  // ২. হেডার অবজেক্ট তৈরি করুন
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...options.headers,
-  };
-
-  // ৩. টোকেন থাকলেই শুধু Authorization হেডার পাঠাবেন (কখনই খালি স্ট্রিং "" পাঠাবেন না)
-  if (accessToken) {
-    headers["Authorization"] = `Bearer ${accessToken}`;
-  } else {
-    delete headers["Authorization"];
-  }
-
-  options.headers = headers;
-
-
-  let res = await fetch(url, options);
-
-  // Guard Clause: If the request is successful or fails with something other than 401, return it
-  if (res.status !== 401) {
-    return res;
-  }
-
-  // Handle Token Refresh on 401 Unauthorized
-  const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null;
-  if (!refreshToken) {
-    logoutUser();
-    return res;
-  }
-
-  const isRefreshed = await handleTokenRefresh(refreshToken);
-  if (!isRefreshed) {
-    logoutUser();
-    return res;
-  }
-
-  // Retry the original request with the fresh token
-  const newAccessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-  options.headers["Authorization"] = newAccessToken ? `Bearer ${newAccessToken}` : "";
-  return fetch(url, options);
 };
 
 /**
