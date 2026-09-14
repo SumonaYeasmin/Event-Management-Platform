@@ -232,6 +232,49 @@ export const registerForEvent = async (id: string) => {
   }
 };
 
+/**
+ * ৬.১ ইউজারের নিজের সমস্ত রেজিস্টার / বুকিং করা ইভেন্ট আনার API কল (Protected - User Only)
+ */
+export const getMyRegistrations = async () => {
+  try {
+    const res = await fetchWithAuth(`${BASE_API}/events/my-registrations`, {
+      method: "GET",
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("getMyRegistrations API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to fetch registered events" },
+    };
+  }
+};
+
+/**
+ * ৬.২ ইভেন্ট রেজিস্ট্রেশন বাতিল করার API কল (Protected - User Only)
+ */
+export const cancelMyRegistration = async (id: string) => {
+  try {
+    const res = await fetchWithAuth(`${BASE_API}/events/${id}/register`, {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("cancelMyRegistration API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to cancel registration" },
+    };
+  }
+};
+
+
 /* =========================================================================
    ORGANIZER APIS
    ========================================================================= */
