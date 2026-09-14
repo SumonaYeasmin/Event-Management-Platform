@@ -38,6 +38,11 @@ export interface OrganizerEventItem {
   organizerId: string;
   createdAt: string;
   updatedAt: string;
+  organizer?: {
+    id: string;
+    name: string;
+    email: string;
+  };
   registrations?: any[];
 }
 
@@ -82,11 +87,157 @@ export interface AdminEventsResponse {
 }
 
 /* =========================================================================
-   ORGANIZER & PUBLIC APIS
+   PUBLIC & USER EVENT APIS
    ========================================================================= */
 
 /**
- * ১. অর্গানাইজারের নতুন ইভেন্ট তৈরি করার API কল (Protected)
+ * ১. সমস্ত পাবলিক পাবলিশড ইভেন্ট ফেচ করা (ফিল্টারিং ও সার্চ সহ)
+ */
+export const getPublicEvents = async (params?: {
+  category?: string;
+  eventType?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  try {
+    const query = new URLSearchParams();
+    if (params?.category) query.append("category", params.category);
+    if (params?.eventType) query.append("eventType", params.eventType);
+    if (params?.search) query.append("search", params.search);
+    if (params?.page) query.append("page", String(params.page));
+    if (params?.limit) query.append("limit", String(params.limit));
+
+    const queryString = query.toString() ? `?${query.toString()}` : "";
+    const res = await fetch(`${BASE_API}/events${queryString}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("getPublicEvents API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to fetch events" },
+    };
+  }
+};
+
+/**
+ * ২. নির্দিষ্ট একটি ইভেন্টের বিস্তারিত ফেচ করা (Public)
+ */
+export const getEventById = async (id: string) => {
+  try {
+    const res = await fetch(`${BASE_API}/events/${id}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("getEventById API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to fetch event details" },
+    };
+  }
+};
+
+/**
+ * ৩. ইভেন্ট ফেভারিট / সেভ করা (Protected - User Only)
+ */
+export const saveEventToFavorites = async (id: string) => {
+  try {
+    const res = await fetchWithAuth(`${BASE_API}/events/${id}/favorite`, {
+      method: "POST",
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("saveEventToFavorites API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to save event" },
+    };
+  }
+};
+
+/**
+ * ৪. ইভেন্ট ফেভারিট থেকে রিমুভ করা (Protected - User Only)
+ */
+export const removeEventFromFavorites = async (id: string) => {
+  try {
+    const res = await fetchWithAuth(`${BASE_API}/events/${id}/favorite`, {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("removeEventFromFavorites API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to remove event from favorites" },
+    };
+  }
+};
+
+/**
+ * ৫. ইউজারের নিজের সেভ করা সমস্ত ইভেন্ট আনার API কল (Protected - User Only)
+ */
+export const getMyFavorites = async () => {
+  try {
+    const res = await fetchWithAuth(`${BASE_API}/events/my-favorites`, {
+      method: "GET",
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("getMyFavorites API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to fetch saved events" },
+    };
+  }
+};
+
+/**
+ * ৬. ইভেন্টে টিকিট বুক / রেজিস্টার করা (Protected - User Only)
+ */
+export const registerForEvent = async (id: string) => {
+  try {
+    const res = await fetchWithAuth(`${BASE_API}/events/${id}/register`, {
+      method: "POST",
+    });
+
+    const data = await res.json();
+    return { ok: res.ok, status: res.status, data };
+  } catch (error: any) {
+    console.error("registerForEvent API error:", error);
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || "Failed to register for event" },
+    };
+  }
+};
+
+/* =========================================================================
+   ORGANIZER APIS
+   ========================================================================= */
+
+/**
+ * ৭. অর্গানাইজারের নতুন ইভেন্ট তৈরি করার API কল (Protected)
  */
 export const createEvent = async (eventData: CreateEventPayload) => {
   try {
@@ -111,7 +262,7 @@ export const createEvent = async (eventData: CreateEventPayload) => {
 };
 
 /**
- * ২. অর্গানাইজারের নিজের তৈরি সমস্ত ইভেন্ট আনার API কল (Protected)
+ * ৮. অর্গানাইজারের নিজের তৈরি সমস্ত ইভেন্ট আনার API কল (Protected)
  */
 export const getMyEvents = async () => {
   try {
@@ -132,7 +283,7 @@ export const getMyEvents = async () => {
 };
 
 /**
- * ৩. নির্দিষ্ট একটি ইভেন্ট ডিলিট / ক্যান্সেল করার API কল (Protected)
+ * ৯. নির্দিষ্ট একটি ইভেন্ট ডিলিট / ক্যান্সেল করার API কল (Protected)
  */
 export const deleteEvent = async (id: string) => {
   try {
@@ -157,7 +308,7 @@ export const deleteEvent = async (id: string) => {
    ========================================================================= */
 
 /**
- * ৪. অ্যাডমিনের জন্য সিস্টেমের সমস্ত ইভেন্ট নিয়ে আসার API (Protected - Admin Only)
+ * ১০. অ্যাডমিনের জন্য সিস্টেমের সমস্ত ইভেন্ট নিয়ে আসার API (Protected - Admin Only)
  */
 export const getAllEventsForAdmin = async (params?: {
   status?: string;
@@ -198,7 +349,7 @@ export const getAllEventsForAdmin = async (params?: {
 };
 
 /**
- * ৫. অ্যাডমিন কর্তৃক ইভেন্ট অনুমোদন (Approve) করার API
+ * ১১. অ্যাডমিন কর্তৃক ইভেন্ট অনুমোদন (Approve) করার API
  */
 export const approveEventByAdmin = async (id: string) => {
   try {
@@ -219,7 +370,7 @@ export const approveEventByAdmin = async (id: string) => {
 };
 
 /**
- * ৬. অ্যাডমিন কর্তৃক ইভেন্ট বাতিল / রিজেক্ট (Reject) করার API
+ * ১২. অ্যাডমিন কর্তৃক ইভেন্ট বাতিল / রিজেক্ট (Reject) করার API
  */
 export const rejectEventByAdmin = async (id: string) => {
   try {
@@ -240,7 +391,7 @@ export const rejectEventByAdmin = async (id: string) => {
 };
 
 /**
- * ৭. অ্যাডমিন কর্তৃক ইভেন্ট স্থগিত (Cancel) করার API
+ * ১৩. অ্যাডমিন কর্তৃক ইভেন্ট স্থগিত (Cancel) করার API
  */
 export const cancelEventByAdmin = async (id: string) => {
   try {
@@ -261,7 +412,7 @@ export const cancelEventByAdmin = async (id: string) => {
 };
 
 /**
- * ৮. অ্যাডমিন কর্তৃক ইভেন্ট চিরতরে মুছে ফেলা (Force Delete) করার API
+ * ১৪. অ্যাডমিন কর্তৃক ইভেন্ট চিরতরে মুছে ফেলা (Force Delete) করার API
  */
 export const deleteEventByAdmin = async (id: string) => {
   try {
