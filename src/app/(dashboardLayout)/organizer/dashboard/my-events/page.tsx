@@ -1,101 +1,91 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react'
-import { Users, Edit, Eye, Plus } from 'lucide-react'
-import Link from 'next/link'
-import { cn } from "@/src/lib/utils"
+import React, { useState, useEffect } from "react";
+import { Users, Edit, Eye, Plus, Calendar, MapPin, Loader2, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/src/lib/utils";
+import { getMyEvents, OrganizerEventItem } from "@/src/services/event.service";
 
-interface OrganizerEvent {
-  id: string
-  title: string
-  date: string
-  category: string
-  registered: string
-  status: 'Published' | 'Pending' | 'Completed'
-  image: string
-  hasViewButton?: boolean
-}
-
-const organizerEvents: OrganizerEvent[] = [
-  {
-    id: '1',
-    title: 'Innovate 2026 — The Future of Technology',
-    date: 'Aug 22, 2026',
-    category: 'Technology',
-    registered: '2/500 registered',
-    status: 'Published',
-    image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&q=80&w=150',
-    hasViewButton: true
-  },
-  {
-    id: '2',
-    title: 'Founders & Funders Networking Summit',
-    date: 'Jul 30, 2026',
-    category: 'Business',
-    registered: '1/200 registered',
-    status: 'Published',
-    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=150',
-    hasViewButton: true
-  },
-  {
-    id: '3',
-    title: 'AI Product Bootcamp (Online)',
-    date: 'Aug 15, 2026',
-    category: 'Education',
-    registered: '1/100 registered',
-    status: 'Published',
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=150',
-    hasViewButton: true
-  },
-  {
-    id: '4',
-    title: 'Regional Startup Pitch Night',
-    date: 'Sep 12, 2026',
-    category: 'Business',
-    registered: '0/150 registered',
-    status: 'Pending',
-    image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=150',
-    hasViewButton: false
-  },
-  {
-    id: '5',
-    title: 'Spring Tech Conference 2026',
-    date: 'Mar 14, 2026',
-    category: 'Conference',
-    registered: '1/400 registered',
-    status: 'Completed',
-    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=150',
-    hasViewButton: false
-  }
-]
-
-type FilterStatus = 'All' | 'Draft' | 'Pending' | 'Published' | 'Rejected' | 'Completed';
+type FilterStatus = "All" | "Draft" | "Pending" | "Published" | "Rejected" | "Completed";
 
 export default function MyEventsPage() {
-  const [activeFilter, setActiveFilter] = useState<FilterStatus>('All');
+  const [events, setEvents] = useState<OrganizerEventItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>("All");
 
-  // get count helper
-  const getCount = (status: FilterStatus) => {
-    if (status === 'All') return organizerEvents.length;
-    return organizerEvents.filter(e => e.status === status).length;
+  // Fetch organizer events from backend
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const res = await getMyEvents();
+      if (res.ok && Array.isArray(res.data)) {
+        setEvents(res.data);
+      } else if (res.ok && res.data?.data && Array.isArray(res.data.data)) {
+        setEvents(res.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to load organizer events:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // filtered list
-  const filteredEvents = organizerEvents.filter((event) => {
-    if (activeFilter === 'All') return true;
-    return event.status === activeFilter;
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  // Helper to format date
+  const formatDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  // Status mapping helper
+  const mapBackendStatus = (status: string): FilterStatus => {
+    const s = status.toUpperCase();
+    if (s === "DRAFT") return "Draft";
+    if (s === "PENDING") return "Pending";
+    if (s === "PUBLISHED") return "Published";
+    if (s === "REJECTED") return "Rejected";
+    if (s === "COMPLETED") return "Completed";
+    return "Published";
+  };
+
+  // Status count helper
+  const getCount = (status: FilterStatus) => {
+    if (status === "All") return events.length;
+    return events.filter((e) => mapBackendStatus(e.status) === status).length;
+  };
+
+  // Filtered list
+  const filteredEvents = events.filter((event) => {
+    if (activeFilter === "All") return true;
+    return mapBackendStatus(event.status) === activeFilter;
   });
 
-  const filterOptions: FilterStatus[] = ['All', 'Draft', 'Pending', 'Published', 'Rejected', 'Completed'];
+  const filterOptions: FilterStatus[] = [
+    "All",
+    "Draft",
+    "Pending",
+    "Published",
+    "Rejected",
+    "Completed",
+  ];
 
   return (
     <div className="space-y-6 w-full">
-
-
       {/* Filter Badges and Create Event Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-4 md:gap-5 lg:gap-7">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
           {filterOptions.map((option) => {
             const isActive = activeFilter === option;
             const count = getCount(option);
@@ -104,105 +94,193 @@ export default function MyEventsPage() {
                 key={option}
                 onClick={() => setActiveFilter(option)}
                 className={cn(
-                  "px-3 md:px-4 py-1.5 md:py-2.5 rounded-lg text-base font-semibold cursor-pointer transition-all duration-150",
+                  "px-3.5 py-2 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-150 flex items-center gap-1.5",
                   isActive
-                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/10"
-                    : "bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 hover:text-slate-900"
+                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-600/20"
+                    : "bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-600 hover:text-slate-900"
                 )}
               >
-                {option} <span className={cn("ml-1", isActive ? "opacity-80" : "text-slate-400")}>{count}</span>
+                <span>{option}</span>
+                <span
+                  className={cn(
+                    "text-xs px-1.5 py-0.5 rounded-md font-bold",
+                    isActive ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                  )}
+                >
+                  {count}
+                </span>
               </button>
-            )
+            );
           })}
         </div>
 
         {/* Create Event Button */}
-        <Link 
-          href="/organizer/dashboard/create-event" 
-          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-base font-semibold lg:px-4 px-2 lg:py-2.5 py-1.5 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-600/10 cursor-pointer self-start md:self-auto"
+        <Link
+          href="/organizer/dashboard/create-event"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white transition-all text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-indigo-600/10 cursor-pointer self-start md:self-auto shrink-0"
         >
           <Plus className="h-4 w-4" />
           Create event
         </Link>
       </div>
 
-      {/* Events List */}
-      <div className="space-y-4">
-        {filteredEvents.map((event) => {
-          const isCompleted = event.status === 'Completed';
-          const isPending = event.status === 'Pending';
-          return (
-            <div
-              key={event.id}
-              className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col lg:flex-row items-start lg:items-center gap-3"
+      {/* Loading State */}
+      {loading ? (
+        <div className="bg-white rounded-2xl border border-slate-100 p-12 flex flex-col items-center justify-center gap-3 text-slate-500">
+          <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          <p className="text-sm font-medium">Loading your events...</p>
+        </div>
+      ) : filteredEvents.length === 0 ? (
+        /* Empty State */
+        <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-12 text-center flex flex-col items-center justify-center gap-3">
+          <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+            <Calendar className="h-6 w-6" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-slate-800">
+              {activeFilter === "All" ? "No events found" : `No ${activeFilter.toLowerCase()} events`}
+            </h3>
+            <p className="text-sm text-slate-500 max-w-sm">
+              {activeFilter === "All"
+                ? "You haven't created any events yet. Click below to create your first event!"
+                : `There are currently no events matching the "${activeFilter}" filter.`}
+            </p>
+          </div>
+          {activeFilter === "All" && (
+            <Link
+              href="/organizer/dashboard/create-event"
+              className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all shadow-sm shadow-indigo-600/20"
             >
-              {/* Event Image */}
-              <img
-                src={event.image}
-                alt={event.title}
-                className="w-full  lg:w-40 h-32 md:h-40 rounded-xl object-cover bg-slate-100 shrink-0"
-              />
+              <Plus className="h-4 w-4" />
+              Create your first event
+            </Link>
+          )}
+        </div>
+      ) : (
+        /* Events List */
+        <div className="space-y-4">
+          {filteredEvents.map((event) => {
+            const formattedStatus = mapBackendStatus(event.status);
+            const isCompleted = formattedStatus === "Completed";
+            const isPending = formattedStatus === "Pending";
+            const isDraft = formattedStatus === "Draft";
+            const isRejected = formattedStatus === "Rejected";
+            const isPublished = formattedStatus === "Published";
 
-              {/* Event Info */}
-              <div className="flex-1 space-y-2">
-                {/* Badges */}
-                <div className="flex flex-wrap items-center gap-2">
-                  {/* Status Badge */}
-                  <span className={`text-sm font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
-                    isCompleted ? 'bg-slate-50 text-slate-600 border-slate-200' :
-                    isPending ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                    'bg-emerald-50 text-emerald-600 border-emerald-100'
-                  }`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${
-                      isCompleted ? 'bg-slate-400' :
-                      isPending ? 'bg-amber-500' :
-                      'bg-emerald-500'
-                    }`} />
-                    {event.status}
-                  </span>
+            const registeredCount =
+              event.registrations && Array.isArray(event.registrations)
+                ? event.registrations.length
+                : (event.totalSeats || 0) - (event.availableSeats || 0);
 
-                  {/* Category Badge */}
-                  <span className={`text-sm font-semibold px-2.5 py-0.5 rounded-full border ${
-                    event.category === 'Technology' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
-                    event.category === 'Business' ? 'bg-sky-50 text-sky-600 border-sky-100' :
-                    event.category === 'Education' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                    'bg-indigo-50 text-indigo-600 border-indigo-100'
-                  }`}>
-                    {event.category}
-                  </span>
+            const displayImage =
+              event.bannerImage ||
+              "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=400";
+
+            return (
+              <div
+                key={event.id}
+                className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col lg:flex-row items-start lg:items-center gap-4"
+              >
+                {/* Event Image */}
+                <img
+                  src={displayImage}
+                  alt={event.title}
+                  className="w-full lg:w-44 h-36 rounded-xl object-cover bg-slate-100 shrink-0"
+                />
+
+                {/* Event Info */}
+                <div className="flex-1 space-y-2">
+                  {/* Badges */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Status Badge */}
+                    <span
+                      className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
+                        isPublished
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : isPending
+                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                          : isDraft
+                          ? "bg-slate-100 text-slate-700 border-slate-200"
+                          : isRejected
+                          ? "bg-red-50 text-red-700 border-red-200"
+                          : "bg-slate-50 text-slate-600 border-slate-200"
+                      }`}
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          isPublished
+                            ? "bg-emerald-500"
+                            : isPending
+                            ? "bg-amber-500 animate-pulse"
+                            : isDraft
+                            ? "bg-slate-400"
+                            : isRejected
+                            ? "bg-red-500"
+                            : "bg-slate-400"
+                        }`}
+                      />
+                      {formattedStatus}
+                    </span>
+
+                    {/* Category Badge */}
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-indigo-50 text-indigo-600 border-indigo-100">
+                      {event.category}
+                    </span>
+
+                    {/* Event Type Badge */}
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-sky-50 text-sky-600 border-sky-100">
+                      {event.eventType === "ONLINE" ? "Online" : "In-Person"}
+                    </span>
+
+                    {event.isFeatured && (
+                      <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-purple-50 text-purple-600 border-purple-100 flex items-center gap-1">
+                        <Sparkles className="h-3 w-3" />
+                        Featured
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Event Title */}
+                  <h3 className="text-base md:text-lg font-bold text-slate-900 leading-snug">
+                    {event.title}
+                  </h3>
+
+                  {/* Date, Location & Seats */}
+                  <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs md:text-sm text-slate-500 font-medium">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                      {formatDate(event.date)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                      {event.location}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="h-3.5 w-3.5 text-slate-400" />
+                      {registeredCount}/{event.totalSeats} registered
+                    </span>
+                    <span className="font-semibold text-slate-700">
+                      {event.ticketPrice > 0 ? `$${event.ticketPrice}` : "Free"}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Event Title */}
-                <h3 className="sm:text-base md:text-lg font-bold text-slate-900 leading-snug">
-                  {event.title}
-                </h3>
-
-                {/* Date & Registered info */}
-                <p className="sm:text-sm md:text-base text-slate-500 font-medium">
-                  {event.date} · {event.registered}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start lg:justify-end shrink-0">
-                <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-base font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 cursor-pointer">
-                  <Users className="h-3.5 w-3.5 text-slate-400" />
-                  Participants
-                </button>
-                <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-base font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 cursor-pointer">
-                  <Edit className="h-3.5 w-3.5 text-slate-400" />
-                  Edit
-                </button>
-                {event.hasViewButton && (
-                  <button className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-base font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 cursor-pointer">
+                {/* Actions */}
+                <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-start lg:justify-end shrink-0 pt-2 lg:pt-0">
+                  <Link
+                    href={`/events/${event.id}`}
+                    target="_blank"
+                    className="border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors text-xs md:text-sm font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer"
+                  >
                     <Eye className="h-3.5 w-3.5 text-slate-400" />
-                    View
-                  </button>
-                )}
+                    Public Page
+                  </Link>
+                </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
-  )
+  );
 }

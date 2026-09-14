@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Ban, Check, Search } from "lucide-react";
 import { fetchWithAuth } from "@/src/services/auth";
 
