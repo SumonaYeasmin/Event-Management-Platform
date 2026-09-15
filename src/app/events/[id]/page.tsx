@@ -16,6 +16,7 @@ import {
   Loader2,
   AlertCircle,
   Sparkles,
+  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,6 +30,7 @@ import {
   getMyFavorites,
   registerForEvent,
 } from "@/src/services/event.service";
+import { createCheckoutSession } from "@/src/services/payment.service";
 
 interface EventDetailPageProps {
   params: Promise<{ id: string }>;
@@ -131,6 +133,23 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
     try {
       setActionLoading(true);
+
+      // পেইড ইভেন্ট হলে Stripe Checkout Session শুরু হবে
+      if (event.ticketPrice && Number(event.ticketPrice) > 0) {
+        toast.loading("Redirecting to Stripe Checkout...", { id: "stripe-redirect" });
+        const res = await createCheckoutSession(eventId);
+        toast.dismiss("stripe-redirect");
+
+        if (res.ok && res.data?.url) {
+          window.location.href = res.data.url; // 🚀 Stripe Hosted Checkout-এ নিয়ে যাবে
+          return;
+        } else {
+          toast.error(res.data?.message || "Failed to create payment session");
+          return;
+        }
+      }
+
+      // ফ্রি ইভেন্ট হলে সরাসরি রেজিস্ট্রেশন
       const res = await registerForEvent(eventId);
       if (res.ok) {
         setIsRegistered(true);
@@ -423,9 +442,13 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                     <>
                       <CheckCircle2 className="h-4 w-4" /> Registered!
                     </>
+                  ) : event.ticketPrice && Number(event.ticketPrice) > 0 ? (
+                    <>
+                      <CreditCard className="h-4 w-4" /> Pay ${event.ticketPrice} with Stripe
+                    </>
                   ) : (
                     <>
-                      <Ticket className="h-4 w-4" /> Register / Book Ticket
+                      <Ticket className="h-4 w-4" /> Register Free Ticket
                     </>
                   )}
                 </button>

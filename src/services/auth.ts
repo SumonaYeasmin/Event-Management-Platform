@@ -179,7 +179,7 @@ export const fetchWithAuth = async (url: string, options: any = {}) => {
 
     options.headers = headers;
 
-    let res = await fetch(url, options);
+    const res = await fetch(url, options);
 
     // Guard Clause: If the request is successful or fails with something other than 401, return it
     if (res.status !== 401) {

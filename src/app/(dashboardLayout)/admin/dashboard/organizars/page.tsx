@@ -123,8 +123,9 @@ export default function OrganizerManagementPage() {
     setOrganizersList((prev) =>
       prev.map((org) => {
         if (org.id === id) {
-          const nextStatus = org.status === "Active" ? "Suspended" : "Active";
-          const updated = { ...org, status: nextStatus };
+          const nextStatus: "Active" | "Suspended" =
+            org.status === "Active" ? "Suspended" : "Active";
+          const updated: OrganizerItem = { ...org, status: nextStatus };
           if (selectedOrganizer?.id === id) {
             setSelectedOrganizer(updated);
           }

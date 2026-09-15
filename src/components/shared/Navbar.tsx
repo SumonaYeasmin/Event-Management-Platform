@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import { logoutUser } from "@/src/services/auth"; // logoutUser ইম্পোর্ট করা হলো
 
 export default function Navbar() {
-  const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dashboardHref, setDashboardHref] = useState("/dashboard/overview");
 
