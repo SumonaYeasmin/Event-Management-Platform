@@ -126,6 +126,12 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
       return;
     }
 
+    const userRole = typeof window !== "undefined" ? localStorage.getItem("userRole") : null;
+    if (userRole && userRole.toUpperCase() !== "USER") {
+      toast.error(`Only attendees (USER) can book or purchase tickets. You are currently logged in as ${userRole}.`);
+      return;
+    }
+
     if (event.availableSeats <= 0) {
       toast.error("Sorry, all seats for this event are fully booked!");
       return;
